@@ -1,0 +1,2 @@
+# One blocked word per line (any script). Matched against each word of a name.
+# Fill this before launch.

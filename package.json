@@ -1,0 +1,46 @@
+{
+  "name": "name-song-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Say your name, get a song. Spike-safe backend: queue behind the provider limit, cache + dedupe, load-aware template picker, instant preview fallback.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "dev:api": "tsx watch --env-file=.env src/apps/api.ts",
+    "dev:sing": "tsx watch --env-file=.env src/apps/sing-worker.ts",
+    "dev:preview": "tsx watch --env-file=.env src/apps/preview-worker.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "start:api": "node dist/src/apps/api.js",
+    "start:sing": "node dist/src/apps/sing-worker.js",
+    "start:preview": "node dist/src/apps/preview-worker.js",
+    "test": "tsx --test test/*.test.ts",
+    "import-template": "tsx --env-file=.env scripts/import-template.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1160.0",
+    "bullmq": "^6.5.2",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.2",
+    "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
+    "multer": "^2.5.0",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "prom-client": "^15.1.3",
+    "rate-limit-redis": "^6.0.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^26.6.6",
+    "pino-pretty": "^13.2.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

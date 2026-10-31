@@ -1,0 +1,43 @@
+{
+  "id": "hi-pop-01",
+  "version": 1,
+  "lang": "hi",
+  "genre": "pop",
+  "spike": true,
+  "providerSongId": "WpmIAqRA64BLO3eujGUp",
+  "modelId": "music_v2_5",
+  "audioFile": "hi-pop-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nहे {name}, तू है सबसे ख़ास",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "hindi vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nहे {name}, तू है सबसे ख़ास",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "hindi vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

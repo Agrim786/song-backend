@@ -1,0 +1,40 @@
+# Single-VPS setup. For more traffic: run more `api` replicas behind a load
+# balancer and switch STORAGE_DRIVER to s3 so every machine sees the same files.
+services:
+  redis:
+    image: redis:7-alpine
+    # BullMQ requires noeviction: evicting queue keys would silently lose jobs.
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes: [redis-data:/data]
+    restart: unless-stopped
+
+  api:
+    build: .
+    env_file: .env
+    environment: { REDIS_URL: "redis://redis:6379" }
+    ports: ["8080:8080"]
+    volumes: [files:/app/data]
+    depends_on: [redis]
+    restart: unless-stopped
+
+  sing-worker:
+    build: .
+    command: ["node", "dist/src/apps/sing-worker.js"]
+    env_file: .env
+    environment: { REDIS_URL: "redis://redis:6379" }
+    volumes: [files:/app/data]
+    depends_on: [redis]
+    restart: unless-stopped
+
+  preview-worker:
+    build: .
+    command: ["node", "dist/src/apps/preview-worker.js"]
+    env_file: .env
+    environment: { REDIS_URL: "redis://redis:6379" }
+    volumes: [files:/app/data]
+    depends_on: [redis]
+    restart: unless-stopped
+
+volumes:
+  redis-data: {}
+  files: {}
