@@ -42,6 +42,7 @@ const schema = z
 
     RATE_LIMIT_SONGS_PER_MIN: z.coerce.number().int().min(1).default(20),
     RATE_LIMIT_READS_PER_MIN: z.coerce.number().int().min(1).default(240),
+    RATE_LIMIT_IP_PER_MIN: z.coerce.number().int().min(1).default(20_000),
     LOADTEST_TOKEN: z.string().optional(),
 
     PREVIEW_CONCURRENCY: z.coerce.number().int().min(0).default(0),

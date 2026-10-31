@@ -115,6 +115,8 @@ Docker (single VPS): `docker compose up --build`.
 | GET | `/v1/previews/:id` | own-voice preview status/url |
 | GET | `/healthz`, `/readyz`, `/metrics` | liveness, readiness, Prometheus (keep `/metrics` private) |
 
+Send `X-Device-Id: <uuid>` on every `/v1` call (a random id the app makes once at install). Rate limits are per device, because Indian carriers put thousands of users behind one IP; without the header the limit falls back to the IP. A high per-IP ceiling (`RATE_LIMIT_IP_PER_MIN`) stays as a backstop.
+
 ## Load testing (never against the real provider)
 
 The mock provider copies measured ElevenLabs behaviour: ~3.5 s latency, hard limit of 2, `429` beyond, and real audio so stitching cost is real. Load tests hit our system only.

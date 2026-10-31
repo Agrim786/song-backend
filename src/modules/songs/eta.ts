@@ -4,10 +4,21 @@ import type { Queues } from "../../shared/queues.js";
 
 const CACHE_MS = 1000;
 
-// Queue ETA = backlog x measured seconds-per-song / provider slots. Cached for a
-// second because at spike rates every request asks, and the answer barely moves.
+interface Snapshot {
+  at: number;
+  backlog: number;
+  secondsPerSong: number;
+}
+
+// Queue ETA = backlog x measured seconds-per-song / provider slots. The backlog
+// is read from Redis at most once a second, because at spike rates every request
+// asks. Songs this process queued since that read are added on top: a load test
+// showed 5,000 users arriving inside one cache window were all told "0 s", so the
+// spike picker and the previews never switched on.
 export class EtaEstimator {
-  private cached: { at: number; value: { etaSeconds: number; backlog: number; secondsPerSong: number } } | null = null;
+  private snap: Snapshot | null = null;
+  private refreshing: Promise<Snapshot> | null = null;
+  private queuedSinceSnap = 0;
 
   constructor(
     private readonly queues: Queues,
@@ -16,21 +27,45 @@ export class EtaEstimator {
     private readonly fallbackSecondsPerSong: number,
   ) {}
 
+  // Called right after this process adds a new sing job.
+  noteQueued() {
+    this.queuedSinceSnap++;
+  }
+
   async estimate() {
-    if (this.cached && Date.now() - this.cached.at < CACHE_MS) return this.cached.value;
-    const [counts, ewma] = await Promise.all([
-      this.queues.sing.getJobCounts("waiting", "prioritized", "active", "delayed"),
-      this.redis.get(keys.singSecondsEwma()),
-    ]);
-    const backlog = Object.values(counts).reduce((a, b) => a + b, 0);
-    const secondsPerSong = Number(ewma) || this.fallbackSecondsPerSong;
-    const value = { etaSeconds: Math.ceil((backlog * secondsPerSong) / this.slots), backlog, secondsPerSong };
-    this.cached = { at: Date.now(), value };
-    return value;
+    const snap = this.snap && Date.now() - this.snap.at < CACHE_MS ? this.snap : await this.refresh();
+    const backlog = snap.backlog + this.queuedSinceSnap;
+    return { etaSeconds: Math.ceil((backlog * snap.secondsPerSong) / this.slots), backlog, secondsPerSong: snap.secondsPerSong };
   }
 
   async etaSeconds() {
     return (await this.estimate()).etaSeconds;
+  }
+
+  // One Redis read per expiry, shared by every request waiting on it.
+  private refresh(): Promise<Snapshot> {
+    this.refreshing ??= (async () => {
+      try {
+        const before = this.queuedSinceSnap;
+        const [counts, ewma] = await Promise.all([
+          this.queues.sing.getJobCounts("waiting", "prioritized", "active", "delayed"),
+          this.redis.get(keys.singSecondsEwma()),
+        ]);
+        // Jobs noted before the read are inside `counts` now. Ones noted during it
+        // may be counted twice until the next read: a small overestimate is the
+        // safe side (a preview too many, never a spike missed).
+        this.queuedSinceSnap -= before;
+        this.snap = {
+          at: Date.now(),
+          backlog: Object.values(counts).reduce((a, b) => a + b, 0),
+          secondsPerSong: Number(ewma) || this.fallbackSecondsPerSong,
+        };
+        return this.snap;
+      } finally {
+        this.refreshing = null;
+      }
+    })();
+    return this.refreshing;
   }
 }
 

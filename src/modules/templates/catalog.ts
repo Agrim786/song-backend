@@ -29,6 +29,10 @@ const templateSchema = z.object({
 export type Template = z.infer<typeof templateSchema>;
 export type Slot = Template["slots"][number];
 
+// How the pool remembers "this name is ready in this template". Includes the
+// version so a re-recorded template never counts songs made from the old audio.
+export const templateRef = (t: Pick<Template, "id" | "version">) => `${t.id}:v${t.version}`;
+
 // Provider rule (ElevenLabs inpainting): generated chunks are 3-120 s.
 const MIN_SLOT_MS = 3000;
 

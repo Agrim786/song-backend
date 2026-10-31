@@ -63,12 +63,12 @@ export class SongRepo {
     return this.redis.hset(keys.song(songId), "status", "processing", "updatedAt", Date.now());
   }
 
-  async markReady(songId: string, url: string, lang: string, nameKey: string, templateId: string) {
+  async markReady(songId: string, url: string, lang: string, nameKey: string, tplRef: string) {
     await this.redis
       .multi()
       .hset(keys.song(songId), "status", "ready", "url", url, "updatedAt", Date.now())
-      // The pool the load-aware picker reads during spikes.
-      .sadd(keys.pool(lang, nameKey), templateId)
+      // The pool the load-aware picker reads during spikes. Holds templateRef() (id + version).
+      .sadd(keys.pool(lang, nameKey), tplRef)
       .exec();
   }
 
@@ -76,7 +76,7 @@ export class SongRepo {
     return this.redis.hset(keys.song(songId), "status", "failed", "error", error.slice(0, 300), "updatedAt", Date.now());
   }
 
-  readyTemplateIds(lang: string, nameKey: string) {
+  readyTemplateRefs(lang: string, nameKey: string) {
     return this.redis.smembers(keys.pool(lang, nameKey));
   }
 }

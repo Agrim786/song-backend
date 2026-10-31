@@ -18,6 +18,13 @@ export const songRequests = new Counter({
   registers: [registry],
 });
 
+export const songsRequeued = new Counter({
+  name: "songs_requeued_total",
+  help: "Songs whose job had vanished and was re-added (should stay near zero)",
+  labelNames: ["reason"],
+  registers: [registry],
+});
+
 export const providerCalls = new Counter({
   name: "provider_calls_total",
   help: "Singing provider calls by result",

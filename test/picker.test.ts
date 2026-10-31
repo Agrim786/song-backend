@@ -9,7 +9,7 @@ const mk = (id: string, spike = false): Template => ({
 });
 const catalog = new Catalog(".", [mk("a"), mk("b", true), mk("c"), mk("d")]);
 const deps = (eta: number, ready: string[] = []) => ({
-  catalog, spikeEtaSeconds: 30, random: () => 0, etaSeconds: async () => eta, readyTemplateIds: async () => ready,
+  catalog, spikeEtaSeconds: 30, random: () => 0, etaSeconds: async () => eta, readyTemplateRefs: async () => ready,
 });
 
 test("calm: any template", async () => {
@@ -17,8 +17,13 @@ test("calm: any template", async () => {
 });
 
 test("busy: prefer a song that already exists for this name", async () => {
-  const r = await pickTemplate(deps(120, ["c"]), { lang: "hi", nameKey: "k" });
+  const r = await pickTemplate(deps(120, ["c:v1"]), { lang: "hi", nameKey: "k" });
   assert.deepEqual([r.reason, r.template.id], ["pool", "c"]);
+});
+
+test("busy: a song made from an older template version does not count as ready", async () => {
+  const r = await pickTemplate(deps(120, ["c:v0"]), { lang: "hi", nameKey: "k" });
+  assert.deepEqual([r.reason, r.template.id], ["spike", "b"]);
 });
 
 test("busy and nothing cached: spike set only", async () => {

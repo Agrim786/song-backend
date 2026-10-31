@@ -2,8 +2,8 @@ import type { Redis } from "ioredis";
 import { env, supportedLangs } from "../../config/env.js";
 import { AppError } from "../../shared/errors.js";
 import { keys } from "../../shared/keys.js";
-import { PRIORITY_BASE, type Queues } from "../../shared/queues.js";
-import { songRequests } from "../../shared/metrics.js";
+import { PRIORITY_BASE, type Queues, type SingJobData } from "../../shared/queues.js";
+import { songRequests, songsRequeued } from "../../shared/metrics.js";
 import { isBlockedName } from "../names/blocklist.js";
 import { normalizeName } from "../names/normalize.js";
 import type { PreviewService } from "../previews/previews.service.js";
@@ -53,7 +53,7 @@ export class SongService {
     const { template, reason } = await pickTemplate(
       {
         catalog: this.catalog,
-        readyTemplateIds: (lang, key) => this.songs.readyTemplateIds(lang, key),
+        readyTemplateRefs: (lang, key) => this.songs.readyTemplateRefs(lang, key),
         etaSeconds: () => this.eta.etaSeconds(),
         spikeEtaSeconds: env.SPIKE_ETA_SECONDS,
       },
@@ -66,15 +66,16 @@ export class SongService {
     const { outcome, waiters } = await this.songs.createOrJoin(songId, { templateId: template.id, lang: body.lang, name: name.lyric, nameKey });
     songRequests.inc({ outcome: outcome === "ready" ? "cache_hit" : outcome === "created" || outcome === "retry" ? "queued" : "joined", pick: reason });
 
-    const jobData = { songId, templateId: template.id, lang: body.lang, nameKey, lyricName: name.lyric };
+    const jobData: SingJobData = { songId, templateId: template.id, lang: body.lang, nameKey, lyricName: name.lyric };
     if (outcome === "created") {
       // jobId = songId: BullMQ also refuses duplicates, a second safety net.
       await this.queues.sing.add("sing", jobData, { jobId: songId, priority: PRIORITY_BASE });
+      this.eta.noteQueued();
     } else if (outcome === "retry") {
-      await this.queues.sing.remove(songId).catch(() => undefined);
-      await this.queues.sing.add("sing", jobData, { jobId: songId, priority: PRIORITY_BASE });
-    } else if (outcome === "queued") {
-      await this.bumpPriority(songId, waiters);
+      await this.requeue(jobData);
+      this.eta.noteQueued();
+    } else if (outcome === "queued" || outcome === "processing") {
+      await this.checkJob(jobData, waiters);
     }
 
     const view = await this.view(songId);
@@ -97,15 +98,28 @@ export class SongService {
     return { ...base, etaSeconds: await this.eta.etaSeconds() };
   }
 
-  // Songs many users wait on jump the queue. Only on 2, 4, 8... waiters, so a
-  // viral name costs a handful of Redis calls, not one per request.
-  private async bumpPriority(songId: string, waiters: number) {
+  // Runs on 2, 4, 8... waiters only, so a viral name costs a handful of Redis
+  // calls, not one per request. Two jobs:
+  // 1. Songs many users wait on jump the queue.
+  // 2. Self-healing: the song record says queued/processing but its job is gone
+  //    (API crashed between create and add, or a worker died before marking the
+  //    song failed, then BullMQ cleaned the job up). Without this, everyone with
+  //    that name would wait on nothing forever.
+  private async checkJob(data: SingJobData, waiters: number) {
     if ((waiters & (waiters - 1)) !== 0) return;
-    const job = await this.queues.sing.getJob(songId);
-    if (!job) return;
-    const state = await job.getState();
+    const job = await this.queues.sing.getJob(data.songId);
+    const state = job ? await job.getState() : "missing";
     if (state === "prioritized" || state === "waiting") {
-      await job.changePriority({ priority: Math.max(1, PRIORITY_BASE - waiters) }).catch(() => undefined);
+      await job!.changePriority({ priority: Math.max(1, PRIORITY_BASE - waiters) }).catch(() => undefined);
+    } else if (state === "missing" || state === "failed" || state === "completed" || state === "unknown") {
+      // Active and delayed (retry backoff) jobs are alive; anything else is a ghost.
+      songsRequeued.inc({ reason: state });
+      await this.requeue(data);
     }
+  }
+
+  private async requeue(data: SingJobData) {
+    await this.queues.sing.remove(data.songId).catch(() => undefined);
+    await this.queues.sing.add("sing", data, { jobId: data.songId, priority: PRIORITY_BASE });
   }
 }

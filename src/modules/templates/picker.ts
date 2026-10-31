@@ -1,11 +1,11 @@
-import type { Catalog, Template } from "./catalog.js";
+import { type Catalog, type Template, templateRef } from "./catalog.js";
 
 export type PickReason = "random" | "pool" | "spike";
 
 export interface PickerDeps {
   catalog: Catalog;
-  // Template ids that already have a finished song for this name.
-  readyTemplateIds: (lang: string, nameKey: string) => Promise<string[]>;
+  // templateRef()s ("id:vN") that already have a finished song for this name.
+  readyTemplateRefs: (lang: string, nameKey: string) => Promise<string[]>;
   etaSeconds: () => Promise<number>;
   spikeEtaSeconds: number;
   random?: () => number;
@@ -25,8 +25,8 @@ export async function pickTemplate(
 
   if ((await deps.etaSeconds()) < deps.spikeEtaSeconds) return { template: pickOne(candidates, rnd), reason: "random" };
 
-  const ready = new Set(await deps.readyTemplateIds(req.lang, req.nameKey));
-  const cached = candidates.filter((t) => ready.has(t.id));
+  const ready = new Set(await deps.readyTemplateRefs(req.lang, req.nameKey));
+  const cached = candidates.filter((t) => ready.has(templateRef(t)));
   if (cached.length) return { template: pickOne(cached, rnd), reason: "pool" };
 
   const spike = candidates.filter((t) => t.spike);

@@ -8,7 +8,7 @@ import { providerCalls, providerLatency } from "../../shared/metrics.js";
 import { recordSongSeconds } from "../songs/eta.js";
 import type { SongRepo } from "../songs/songs.repo.js";
 import type { FileStorage } from "../../shared/storage/storage.js";
-import type { Catalog } from "../templates/catalog.js";
+import { type Catalog, templateRef } from "../templates/catalog.js";
 import type { CircuitBreaker } from "./breaker.js";
 import { buildClipPlan, splicePieces } from "./plan.js";
 import type { SingingProvider } from "./providers/provider.js";
@@ -52,7 +52,7 @@ export function createSingProcessor(d: Deps) {
     const song = await stitchClip(d.catalog.audioPath(tpl), clip, splicePieces(layouts, tpl.durationMs));
     const key = `songs/${songId}.mp3`;
     await d.storage.put(key, song, "audio/mpeg", { immutable: true });
-    await d.songs.markReady(songId, d.storage.url(key), lang, nameKey, templateId);
+    await d.songs.markReady(songId, d.storage.url(key), lang, nameKey, templateRef(tpl));
     await recordSongSeconds(d.redis, seconds);
     logger.info({ songId, templateId, seconds: Number(seconds.toFixed(2)) }, "song ready");
   };

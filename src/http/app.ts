@@ -17,7 +17,7 @@ import type { Catalog } from "../modules/templates/catalog.js";
 import type { Queues } from "../shared/queues.js";
 import { logger } from "../shared/logger.js";
 import { errorHandler, notFound } from "./errorHandler.js";
-import { limiter } from "./rateLimit.js";
+import { perClientLimiter, perIpCeiling } from "./rateLimit.js";
 
 export interface AppDeps {
   redis: Redis;
@@ -60,9 +60,10 @@ export function buildApp(d: AppDeps) {
     res.type(registry.contentType).send(await registry.metrics());
   });
 
-  const writes = limiter(d.redis, "w", env.RATE_LIMIT_SONGS_PER_MIN);
-  const reads = limiter(d.redis, "r", env.RATE_LIMIT_READS_PER_MIN);
-  app.use("/v1", (req, res, next) => (req.method === "GET" ? reads : writes)(req, res, next));
+  const ipCeiling = perIpCeiling(d.redis, env.RATE_LIMIT_IP_PER_MIN);
+  const writes = perClientLimiter(d.redis, "w", env.RATE_LIMIT_SONGS_PER_MIN);
+  const reads = perClientLimiter(d.redis, "r", env.RATE_LIMIT_READS_PER_MIN);
+  app.use("/v1", ipCeiling, (req, res, next) => (req.method === "GET" ? reads : writes)(req, res, next));
   app.use("/v1", recordingRoutes(d.redis, d.storage, d.recordings, d.stt));
   app.use("/v1", songRoutes(d.songs, d.previews));
 
