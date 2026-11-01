@@ -6,7 +6,7 @@ Nov 1, 2026 · @Agrim Mahajan
 
 Name Song is a one-screen app: say your name, confirm it, pick one of five Indian languages, and hear a song with your name sung in it, about 5 to 7 seconds after tapping when the line is short, with the music starting at once.
 
-The AI singer is the bottleneck, not our servers: ElevenLabs sings at most 2 songs at a time. So users never talk to it directly, and the system makes as few, as cheap and as well-packed singing calls as possible:
+I started from one measured fact: the AI singer is the bottleneck, not my servers. ElevenLabs sings at most 2 songs at a time. So I designed the system so users never talk to the singer directly, and it makes as few, as cheap and as well-packed singing calls as possible:
 
 - **Sing only the name.** Each song is a pre-made template; per user only the two spots where the name is sung are re-sung, then stitched in. 165 credits per new name instead of 371.
 - **Sing each name once.** A song's id is a hash of template, version, language and name, so a finished song is reused forever and identical requests share one job.
@@ -73,7 +73,24 @@ The obvious design (each tap asks the AI for a full new song) cannot survive a r
 | Cost per new song                   | 371 credits, about $0.067          | 165 credits, about $0.03        |
 | Repeated names                      | sung again every time              | free and instant                |
 
-So the design has four jobs: make fewer singing calls (reuse and share songs), make each call cheaper and fuller (sing only the name, 5 at a time), never overload the provider (one queue capped at its limit), and be honest with each user about their wait.
+So I gave the design four jobs: make fewer singing calls (reuse and share songs), make each call cheaper and fuller (sing only the name, 5 at a time), never overload the provider (one queue capped at its limit), and be honest with each user about their wait.
+
+## Key design decisions
+
+Each decision below was chosen against at least one alternative, and most were settled by a measurement rather than by preference.
+
+| Decision | Alternatives I considered | Why I chose it |
+| --- | --- | --- |
+| Re-sing only the two name spots (clip mode) and stitch them into a pre-made template | A full new song per tap; an own-voice preview; a CPU singing synthesizer | 12 s of audio instead of 27, so 165 credits instead of 371. The other two sounded like a voice pasted over music |
+| Song id = hash of template, version, language and name | A random id per request; pre-singing a list of popular names | Same inputs give the same song forever, so reuse and de-duplication come for free, and the catalogue grows with real names instead of a guessed list |
+| One queue, capped at the provider's 2-at-once limit | More workers; calling the provider straight from the API | More workers only collect 429 refusals. The cap holds across every worker, so the provider is never overloaded |
+| Batch size that adapts: 1 name when quiet, up to 5 when there is a line | Always batch; never batch | 1 name returns in about 3.4 s, inside the 6 s intro. Batching only pays when there is a line, where it gives 2.3x throughput (measured) |
+| Create-or-join and claim as atomic Redis (Lua) steps | Check-then-write in application code | No race between two API copies: 5,000 requests for 100 names became 200 jobs |
+| Each user's wait from their own ticket number in line | One global estimate; a live countdown | A global estimate told everyone the same thing. Place in line kept 48 of 50 promises on the laptop; past about a minute users are asked to come back instead of shown a countdown |
+| Rate limit per phone id, with a high per-IP ceiling | Rate limit per IP | Indian carriers put many users behind one IP: 200 users on one IP got 0 songs before, 200 after |
+| Play the template intro at once, then hand over to the user's song with a crossfade | A spinner until the song is ready | Music starts on the tap. The name is first sung at 6 s, and if the song is not ready by then the music waits at that spot |
+| Stateless API; all shared state in Redis | State held in each API process | Answering grows by adding API copies behind the load balancer, with no code change |
+| Redis + BullMQ for the queue | Kafka, SQS, or a database queue | One small server: BullMQ gives retries, priorities and a rate-limit pause on the Redis that is already there |
 
 ## Architecture
 
@@ -130,7 +147,7 @@ A song is a template with the user's name sung into two short spots; only those 
 
 ## How a rush is handled
 
-Each layer either removes work before it reaches the AI singer or makes the remaining wait honest; all of them are built and were exercised in load tests.
+Each layer either removes work before it reaches the AI singer or makes the remaining wait honest; I built all of them and exercised each one in load tests.
 
 | #   | Layer             | What it does                                                                                                                                                                                                                                                                                | Evidence                                                                      |
 | --- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -173,7 +190,7 @@ The singing bill is the same in every row, about $3,000 for 1,00,000 new names; 
 
 ## Measured numbers
 
-Everything in this section was run, not estimated, between 31 Oct and 1 Nov 2026; estimates elsewhere are labelled as such.
+I ran everything in this section myself, between 31 Oct and 1 Nov 2026; estimates elsewhere are labelled as such.
 
 **The real ElevenLabs API** (Creator plan, clip mode):
 
@@ -204,9 +221,9 @@ Everything in this section was run, not estimated, between 31 Oct and 1 Nov 2026
 
 **How to read the VPS column:** the answers are about 8x slower than the laptop on the same code, which is the CPU, not the design. Wait promises for the front of the line miss by 10 to 30 s there because song-making and answering share 2 slow CPUs during the burst, so speed swings; on the laptop they held. The test client ran over a phone hotspot with 200 connections, so some of the answer time is the client's own network.
 
-## Bugs found by testing
+## Bugs I found by testing
 
-All but one bug below were found by running the system (load tests, an emulator, a real phone), and every fix was checked by running it again.
+I found all but one bug below by running the system (load tests, an emulator, a real phone), and checked every fix by running it again.
 
 | Bug                                                                 | How it showed up                        | Fix                                                                                                                                                   | Checked                                    |
 | ------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
@@ -224,9 +241,9 @@ All but one bug below were found by running the system (load tests, an emulator,
 | App stuck forever on a saved song the server no longer knew         | Emulator                                | An "unknown song" answer clears it and starts over                                                                                                    | Checked on emulator                        |
 | 0.4 s silence when the song took over from the intro                | Real phone, first play only             | Start the song silently, line it up, crossfade                                                                                                        | Confirmed by ear on a real phone           |
 
-## Tried and rejected
+## What I tried and rejected
 
-Each idea below was built or measured and then dropped for a stated reason, so what remains in the design is what survived evidence.
+I built or measured each idea below, then dropped it for a stated reason, so what remains in the design is what survived evidence.
 
 | Idea                                                                                                          | What was found                                                                                                                                                            | Verdict                                                                                   |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -311,7 +328,7 @@ The system does not fail under load, but it has real limits, and a few claims re
 
 ## Phase 2
 
-The next steps, in the order they would pay off:
+What I would build next, in the order it would pay off:
 
 1. **More singing capacity** for a planned launch: a bigger ElevenLabs plan, or a self-hosted open model (ACE-Step's repaint was tested in the lab and keeps the rest of the song nearly identical).
 2. **More CPU:** a separate song-making server, and two or more API copies behind the load balancer.
@@ -322,13 +339,13 @@ The next steps, in the order they would pay off:
 7. **Native-speaker review** of every lyric, and more template shapes so songs feel less alike.
 8. **A singing-voice model trained on the template singers,** which would make the CPU-only singer viable and remove the provider from the hot path entirely.
 
-## Questions a reviewer will ask
+## Common questions
 
-Short answers to say out loud; each is backed by a section above.
+Short answers; each is backed by a section above.
 
 **Can it handle 1,00,000 users at once?** The system, yes: no errors, every user gets an answer, repeats are instant, and answering grows by adding API copies. Singing 1,00,000 brand-new names in minutes, no: on this plan it is about 85 a minute. That is a budget dial, not a code limit: about 240 provider slots would do it in 10 minutes, and the bill per name is the same.
 
-**What does the 1,00,000th user see?** An answer within seconds. If the line is long: "come back in a bit, your song will be waiting". Never a fake countdown, and for a planned launch we size capacity so that line stays short.
+**What does the 1,00,000th user see?** An answer within seconds. If the line is long: "come back in a bit, your song will be waiting". Never a fake countdown, and for a planned launch I would size capacity so that line stays short.
 
 **Why is it slower on your server than on your laptop?** The live server is a €7.99, 2-CPU box, the floor and not the ceiling. Same code: 1.5 s for 5,000 users on a laptop, about 12 s on the VPS. The API keeps no state, so it scales with CPUs and copies.
 
@@ -342,7 +359,7 @@ Short answers to say out loud; each is backed by a section above.
 
 **Why ElevenLabs and not your own model?** Quality today and no GPUs to run. Self-hosting removes the 2-at-once cap, but each new name still costs GPU time, so it is the phase 2 capacity lever.
 
-**What did you try that failed?** An own-voice preview, a CPU-only singing synthesizer (fast, but it sounded pasted in; the evidence is in the repo), streaming (fails with clip mode), and pre-sung name lists (cannot cover the long tail).
+**What did you try that failed?** I tried an own-voice preview, a CPU-only singing synthesizer (fast, but it sounded pasted in; the evidence is in the repo), streaming (fails with clip mode), and pre-sung name lists (cannot cover the long tail).
 
 **What was the hardest bug?** Speech-to-text silently never worked on phones: the server logs showed zero upload requests, which pointed to the app. Expo SDK 58's fetch rejects React Native's old file-upload format; the recording is now sent through Expo's own File class.
 
