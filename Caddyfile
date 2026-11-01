@@ -1,0 +1,12 @@
+# Public entry point. SITE_ADDRESS is ":80" (plain HTTP on the IP, for a first
+# check) or the API's domain, e.g. "api.example.com", which makes Caddy fetch and
+# renew an HTTPS certificate automatically.
+{$SITE_ADDRESS::80} {
+	encode gzip
+
+	# Prometheus metrics are for the private network only.
+	@metrics path /metrics
+	respond @metrics 404
+
+	reverse_proxy api:8080
+}

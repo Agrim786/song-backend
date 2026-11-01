@@ -1,0 +1,28 @@
+# Production overrides for a single VPS:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Only Caddy is public (80/443); the API is reachable only through it.
+services:
+  api:
+    ports: !reset []
+    expose: ["8080"]
+    environment:
+      REDIS_URL: "redis://redis:6379"
+      # One proxy (Caddy) in front: needed for correct client IPs in rate limits.
+      # Set to 2 if Cloudflare's proxy is turned on in front of Caddy.
+      TRUST_PROXY: "1"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [api]
+
+volumes:
+  caddy-data: {}
+  caddy-config: {}
