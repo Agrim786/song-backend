@@ -11,6 +11,12 @@ services:
       # Set to 2 if Cloudflare's proxy is turned on in front of Caddy.
       TRUST_PROXY: "1"
 
+  sing-worker:
+    # Stitching songs (ffmpeg) is CPU-heavy. Capped at one core so the API always
+    # keeps the other one free to answer users during a rush (load test: stitching
+    # alone reached ~190% CPU and slowed the API).
+    cpus: "1.0"
+
   caddy:
     image: caddy:2
     restart: unless-stopped

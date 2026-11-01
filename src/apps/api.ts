@@ -18,7 +18,7 @@ const redis = createRedis("api");
 const catalog = await loadCatalog(env.TEMPLATES_DIR, env.CLIP_CONTEXT_MS);
 const queues = createQueues();
 const songRepo = new SongRepo(redis);
-const eta = new EtaEstimator(() => songRepo.pendingCount(catalog.ids()), redis, env.PROVIDER_CONCURRENCY, env.SECONDS_PER_SONG_ESTIMATE);
+const eta = new EtaEstimator(() => songRepo.pendingCount(catalog.ids()), redis, env.PROVIDER_CONCURRENCY, env.SECONDS_PER_SONG_ESTIMATE, env.MAX_NAMES_PER_CALL);
 const songs = new SongService(redis, catalog, songRepo, queues, eta);
 const stt: SpeechToText =
   env.STT_PROVIDER === "elevenlabs" ? new ElevenLabsStt(env.ELEVENLABS_API_KEY!) : env.STT_PROVIDER === "sarvam" ? new SarvamStt(env.SARVAM_API_KEY!) : new MockStt();

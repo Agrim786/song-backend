@@ -20,7 +20,9 @@ const schema = z
     ELEVENLABS_API_KEY: z.string().optional(),
     PROVIDER_CONCURRENCY: z.coerce.number().int().min(1).default(2),
     CLIP_CONTEXT_MS: z.coerce.number().int().min(50).default(1000),
-    SECONDS_PER_SONG_ESTIMATE: z.coerce.number().positive().default(3.5),
+    // Slot-busy seconds per song (provider + stitching) until real ones are measured.
+    // 2.2 = measured with 5-name batches (jobs of ~8-9 s for 5 songs).
+    SECONDS_PER_SONG_ESTIMATE: z.coerce.number().positive().default(2.2),
     // Names per provider call when the line is long (provider max is 5 for 2-slot templates).
     MAX_NAMES_PER_CALL: z.coerce.number().int().min(1).max(10).default(5),
 

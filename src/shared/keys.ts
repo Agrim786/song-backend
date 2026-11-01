@@ -6,6 +6,8 @@ export const keys = {
   // Songs waiting to be sung, per template, oldest first. A worker claims several
   // at once from here to batch them into one provider call.
   pending: (templateId: string) => `pending:${templateId}`,
+  // Ticket counter for the line: every waiting song gets the next number.
+  lineTicket: () => "seq:line",
   idempotency: (key: string) => `idem:${key}`,
   sttWindow: (minute: number) => `stt:${minute}`,
   singSecondsEwma: () => "stats:sing:ewma",

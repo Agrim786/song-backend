@@ -70,6 +70,12 @@ export class SongService {
     if (isBlockedName(name.key)) throw new AppError(422, "name_not_allowed", "This name can't be used");
 
     const nameKey = nameKeyOf(body.lang, name.key);
+    // Count this request as soon as it arrives, before the template is picked: in a
+    // burst that lands within one second every request picks before any other has
+    // joined the line, so they all saw "calm" and scattered across every template.
+    // Counted early, the rush is visible within milliseconds and the picker steers
+    // it onto the spike set, which keeps batches full and the line in order.
+    this.eta.noteArrival();
     const { template, reason } = await pickTemplate(
       {
         catalog: this.catalog,
@@ -89,7 +95,6 @@ export class SongService {
     const job: SingJobData = { songId, templateId: template.id };
     if (outcome === "created" || outcome === "retry") {
       await this.queue(job);
-      this.eta.noteQueued();
     } else if (outcome === "queued") {
       await this.checkJob(job, waiters);
     } else if (outcome === "processing" && Date.now() - updatedAt > STUCK_PROCESSING_MS) {
@@ -118,7 +123,11 @@ export class SongService {
     if (s.status === "ready") return { ...base, url: s.url, wait: "none" };
     // Failed: the app offers "try again", which re-queues it (see createOrJoin).
     if (s.status === "failed") return { ...base, wait: "none" };
-    const etaSeconds = await this.eta.etaSeconds();
+    // This user's own wait, from their place in line, not the whole line's: in a
+    // rush the first ~85 people still get the instant experience (intro plays,
+    // song lands) and only those further back are told to come back.
+    const position = s.status === "queued" ? await this.songs.positionInLine(s.templateId, songId, this.catalog.ids()) : -1;
+    const etaSeconds = await this.eta.etaForPosition(Math.max(position, 1));
     // Never show a countdown we can't keep: past the threshold the app says
     // "come back in a bit" and checks once a minute; the song waits under its id.
     if (etaSeconds > env.LATER_AFTER_SECONDS) return { ...base, wait: "later", pollAfterSeconds: 60 };

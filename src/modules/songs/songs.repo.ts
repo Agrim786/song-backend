@@ -56,6 +56,29 @@ end
 return out
 `;
 
+// Joins the line with the next ticket number (not a timestamp: in a burst dozens
+// of songs land in the same millisecond, and equal stamps made places in line
+// jump in big steps). Ticket order is exact first-come-first-served.
+const ENQUEUE = `
+if redis.call('ZSCORE', KEYS[1], ARGV[1]) then return 0 end
+redis.call('ZADD', KEYS[1], redis.call('INCR', KEYS[2]), ARGV[1])
+return 1
+`;
+
+// A song's place in line: how many waiting songs (in every template) hold a ticket
+// at or before its own, itself included. Songs are sung oldest first, so this is how
+// many songs stand between the user and theirs. One round-trip, however many
+// templates. Returns -1 if the song is no longer waiting (claimed or done).
+// ARGV[1] = this song's template waiting set (not in KEYS: single-node Redis only,
+// like CLAIM above), ARGV[2] = song id; KEYS = every template's waiting set.
+const POSITION = `
+local score = redis.call('ZSCORE', ARGV[1], ARGV[2])
+if not score then return -1 end
+local n = 0
+for _, k in ipairs(KEYS) do n = n + redis.call('ZCOUNT', k, '-inf', score) end
+return n
+`;
+
 export type JoinOutcome = "created" | "retry" | Exclude<SongStatus, "failed">;
 
 export class SongRepo {
@@ -85,11 +108,16 @@ export class SongRepo {
 
   // Puts a song in its template's waiting set (no-op if it is already there).
   enqueue(templateId: string, songId: string) {
-    return this.redis.zadd(keys.pending(templateId), "NX", Date.now(), songId);
+    return this.redis.eval(ENQUEUE, 2, keys.pending(templateId), keys.lineTicket(), songId);
   }
 
   async claim(templateId: string, songId: string, max: number): Promise<string[]> {
     return (await this.redis.eval(CLAIM, 1, keys.pending(templateId), songId, max, keys.songPrefix(), Date.now())) as string[];
+  }
+
+  async positionInLine(templateId: string, songId: string, templateIds: string[]): Promise<number> {
+    const keysAll = templateIds.map((id) => keys.pending(id));
+    return Number(await this.redis.eval(POSITION, keysAll.length, ...keysAll, keys.pending(templateId), songId));
   }
 
   // Songs still waiting to be sung, across templates: the real backlog (BullMQ also

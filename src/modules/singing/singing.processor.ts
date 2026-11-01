@@ -35,6 +35,9 @@ interface Deps {
 export function createSingProcessor(d: Deps) {
   return async (job: Job<SingJobData>) => {
     const tpl = d.catalog.get(job.data.templateId);
+    // Whole-job time (provider + stitching + saving): how long this slot was busy,
+    // which is what decides how fast the line really moves.
+    const jobStarted = performance.now();
 
     let batch = job.data.batch;
     if (!batch) {
@@ -96,9 +99,11 @@ export function createSingProcessor(d: Deps) {
       }
     });
 
-    // ETA math works per song, so a 5-name call counts as 5 songs.
-    await recordSongSeconds(d.redis, seconds / people.length);
-    logger.info({ templateId: tpl.id, names: people.length, seconds: Number(seconds.toFixed(2)) }, "batch sung");
+    // Wait-time math works per song, so a 5-name job counts as 5 songs. Measured
+    // over the whole job, not just the provider call: stitching also holds the slot.
+    const jobSeconds = (performance.now() - jobStarted) / 1000;
+    await recordSongSeconds(d.redis, jobSeconds / people.length);
+    logger.info({ templateId: tpl.id, names: people.length, providerSeconds: Number(seconds.toFixed(2)), jobSeconds: Number(jobSeconds.toFixed(2)) }, "batch sung");
     return { sung: people.length };
   };
 }
