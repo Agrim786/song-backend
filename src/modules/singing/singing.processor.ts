@@ -1,11 +1,18 @@
 import { type Job, Worker } from "bullmq";
 import type { Redis } from "ioredis";
 import { env } from "../../config/env.js";
-import { ProviderError, ProviderRateLimitedError } from "../../shared/errors.js";
+import {
+  ProviderError,
+  ProviderRateLimitedError,
+} from "../../shared/errors.js";
 import { probeDurationMs } from "../../shared/ffmpeg.js";
 import { logger } from "../../shared/logger.js";
 import type { SingJobData } from "../../shared/queues.js";
-import { namesPerCall, providerCalls, providerLatency } from "../../shared/metrics.js";
+import {
+  namesPerCall,
+  providerCalls,
+  providerLatency,
+} from "../../shared/metrics.js";
 import { withTempDir } from "../../shared/tempfile.js";
 import { recordSongSeconds } from "../songs/eta.js";
 import type { SongRecord, SongRepo } from "../songs/songs.repo.js";
@@ -45,7 +52,9 @@ export function createSingProcessor(d: Deps) {
       // inside the app's 6 s intro). Busy: fill the call with other waiting songs of
       // this template, ~2.3x the throughput per provider slot (measured).
       const busy = (await d.backlog()) > env.PROVIDER_CONCURRENCY;
-      const max = busy ? Math.min(env.MAX_NAMES_PER_CALL, maxNamesPerCall(tpl)) : 1;
+      const max = busy
+        ? Math.min(env.MAX_NAMES_PER_CALL, maxNamesPerCall(tpl))
+        : 1;
       batch = await d.songs.claim(tpl.id, job.data.songId, max);
       // Already sung inside another job's batch: nothing left to do.
       if (!batch.length) return { skipped: true };
@@ -59,7 +68,15 @@ export function createSingProcessor(d: Deps) {
       .filter((p): p is { id: string; rec: SongRecord } => Boolean(p.rec));
     if (!people.length) return { skipped: true };
 
-    const { plan, people: layouts, clipDurationMs } = buildBatchPlan(tpl, people.map((p) => p.rec.name), env.CLIP_CONTEXT_MS);
+    const {
+      plan,
+      people: layouts,
+      clipDurationMs,
+    } = buildBatchPlan(
+      tpl,
+      people.map((p) => p.rec.name),
+      env.CLIP_CONTEXT_MS,
+    );
     const started = performance.now();
     let clip: Buffer;
     try {
@@ -68,7 +85,10 @@ export function createSingProcessor(d: Deps) {
     } catch (e) {
       if (e instanceof ProviderRateLimitedError) {
         // Pause this queue and put the job back without spending a retry attempt.
-        providerCalls.inc({ provider: d.provider.name, result: "rate_limited" });
+        providerCalls.inc({
+          provider: d.provider.name,
+          result: "rate_limited",
+        });
         await d.getWorker().rateLimit(e.retryAfterMs);
         throw Worker.RateLimitError();
       }
@@ -83,15 +103,28 @@ export function createSingProcessor(d: Deps) {
       const clipPath = await put("clip.mp3", clip);
       const got = await probeDurationMs(clipPath);
       if (Math.abs(got - clipDurationMs) > CLIP_TOLERANCE_MS) {
-        throw new ProviderError(502, `clip is ${got} ms, planned ${clipDurationMs} ms`);
+        throw new ProviderError(
+          502,
+          `clip is ${got} ms, planned ${clipDurationMs} ms`,
+        );
       }
       // One person's stitch failing must not throw away everyone else's song.
       for (const [i, p] of people.entries()) {
         try {
-          const song = await stitchClip(d.catalog.audioPath(tpl), clipPath, splicePieces(layouts[i]!, tpl.durationMs));
+          const song = await stitchClip(
+            d.catalog.audioPath(tpl),
+            clipPath,
+            splicePieces(layouts[i]!, tpl.durationMs),
+          );
           const key = `songs/${p.id}.mp3`;
           await d.storage.put(key, song, "audio/mpeg", { immutable: true });
-          await d.songs.markReady(p.id, d.storage.url(key), p.rec.lang, p.rec.nameKey, templateRef(tpl));
+          await d.songs.markReady(
+            p.id,
+            d.storage.url(key),
+            p.rec.lang,
+            p.rec.nameKey,
+            templateRef(tpl),
+          );
         } catch (e) {
           logger.error({ songId: p.id, err: e }, "stitch failed");
           await d.songs.markFailed(p.id, (e as Error).message);
@@ -103,7 +136,15 @@ export function createSingProcessor(d: Deps) {
     // over the whole job, not just the provider call: stitching also holds the slot.
     const jobSeconds = (performance.now() - jobStarted) / 1000;
     await recordSongSeconds(d.redis, jobSeconds / people.length);
-    logger.info({ templateId: tpl.id, names: people.length, providerSeconds: Number(seconds.toFixed(2)), jobSeconds: Number(jobSeconds.toFixed(2)) }, "batch sung");
+    logger.info(
+      {
+        templateId: tpl.id,
+        names: people.length,
+        providerSeconds: Number(seconds.toFixed(2)),
+        jobSeconds: Number(jobSeconds.toFixed(2)),
+      },
+      "batch sung",
+    );
     return { sung: people.length };
   };
 }

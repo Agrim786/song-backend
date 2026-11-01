@@ -7,13 +7,13 @@ Built to stay up and honest when 5,000 or 1 lakh people tap "generate" at once.
 
 The singing provider is the bottleneck, not our code. Measured on ElevenLabs Creator (31 Oct to 1 Nov 2026):
 
-| Measured | Value |
-|---|---|
-| Parallel generations allowed | **2** (3rd gets `429`) |
-| 1 name per call (clip mode) | ~3.3 to 3.7 s |
-| 5 names per call | ~6.9 to 7.4 s, **2.3x throughput** per slot |
-| Cost per new name (clip mode) | ~165 credits, about $0.03, same in a batch |
-| Returned clip length | always planned length + 24 ms |
+| Measured                      | Value                                       |
+| ----------------------------- | ------------------------------------------- |
+| Parallel generations allowed  | **2** (3rd gets `429`)                      |
+| 1 name per call (clip mode)   | ~3.3 to 3.7 s                               |
+| 5 names per call              | ~6.9 to 7.4 s, **2.3x throughput** per slot |
+| Cost per new name (clip mode) | ~165 credits, about $0.03, same in a batch  |
+| Returned clip length          | always planned length + 24 ms               |
 
 So users never talk to the provider directly. The system:
 
@@ -47,12 +47,12 @@ The full design, measurements and trade-offs are in the design doc.
                          S3 / R2 + CDN (immutable songs; template audio for the intro)
 ```
 
-| Part | How it scales | Limit |
-|---|---|---|
-| API | Add copies behind a load balancer (stateless) | CPU per copy |
-| Redis | One node handles this load; managed Redis for failover | Memory |
+| Part        | How it scales                                                           | Limit                                               |
+| ----------- | ----------------------------------------------------------------------- | --------------------------------------------------- |
+| API         | Add copies behind a load balancer (stateless)                           | CPU per copy                                        |
+| Redis       | One node handles this load; managed Redis for failover                  | Memory                                              |
 | sing-worker | More processes add resilience only; the cap stays at the provider limit | **Provider plan** (more slots, or self-hosted GPUs) |
-| Files | S3/R2 behind a CDN, songs cached forever (content-addressed) | none in practice |
+| Files       | S3/R2 behind a CDN, songs cached forever (content-addressed)            | none in practice                                    |
 
 ### How batching works
 
@@ -109,24 +109,29 @@ New language: add its templates (`scripts/create-template.ts` presets with lyric
 
 ## API
 
-| Method | Path | Notes |
-|---|---|---|
-| GET | `/v1/languages` | Languages that have templates; the app's language picker |
-| POST | `/v1/names/transcribe` | multipart `audio` + `lang` (call after the user picks a language). Returns `{name, needsTyping}`. The recording is never stored. Over the STT budget, `needsTyping: true` instead of an error |
-| POST | `/v1/songs` | `{name, lang}` + optional `Idempotency-Key`. `200` ready, `202` queued |
-| GET | `/v1/songs/:id` | Current status; `Retry-After` header says when to ask again |
-| GET | `/files/templates/:file` | Template audio for the instant intro |
-| GET | `/healthz`, `/readyz`, `/metrics` | liveness, readiness, Prometheus (keep `/metrics` private) |
+| Method | Path                              | Notes                                                                                                                                                                                         |
+| ------ | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/languages`                   | Languages that have templates; the app's language picker                                                                                                                                      |
+| POST   | `/v1/names/transcribe`            | multipart `audio` + `lang` (call after the user picks a language). Returns `{name, needsTyping}`. The recording is never stored. Over the STT budget, `needsTyping: true` instead of an error |
+| POST   | `/v1/songs`                       | `{name, lang}` + optional `Idempotency-Key`. `200` ready, `202` queued                                                                                                                        |
+| GET    | `/v1/songs/:id`                   | Current status; `Retry-After` header says when to ask again                                                                                                                                   |
+| GET    | `/files/templates/:file`          | Template audio for the instant intro                                                                                                                                                          |
+| GET    | `/healthz`, `/readyz`, `/metrics` | liveness, readiness, Prometheus (keep `/metrics` private)                                                                                                                                     |
 
 Song response:
 
 ```json
 {
-  "songId": "…", "status": "queued | processing | ready | failed",
+  "songId": "…",
+  "status": "queued | processing | ready | failed",
   "url": "… (when ready)",
   "wait": "none | short | later",
-  "etaSeconds": 12, "pollAfterSeconds": 4,
-  "intro": { "templateUrl": "…/files/templates/hi-love-01.mp3?v=1", "nameAtMs": 6000 }
+  "etaSeconds": 12,
+  "pollAfterSeconds": 4,
+  "intro": {
+    "templateUrl": "…/files/templates/hi-love-01.mp3?v=1",
+    "nameAtMs": 6000
+  }
 }
 ```
 

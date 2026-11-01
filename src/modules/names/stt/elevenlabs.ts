@@ -7,9 +7,17 @@ const URL = "https://api.elevenlabs.io/v1/speech-to-text";
 export class ElevenLabsStt implements SpeechToText {
   constructor(private readonly apiKey: string) {}
 
-  async transcribe(audio: Buffer, mime: string, lang?: string): Promise<string | null> {
+  async transcribe(
+    audio: Buffer,
+    mime: string,
+    lang?: string,
+  ): Promise<string | null> {
     const form = new FormData();
-    form.append("file", new Blob([new Uint8Array(audio)], { type: mime }), "name");
+    form.append(
+      "file",
+      new Blob([new Uint8Array(audio)], { type: mime }),
+      "name",
+    );
     form.append("model_id", "scribe_v2");
     // No language: Scribe detects it (a Hindi speaker's name comes back in Devanagari).
     if (lang) form.append("language_code", lang);

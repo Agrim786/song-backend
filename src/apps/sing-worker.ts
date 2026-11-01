@@ -21,7 +21,10 @@ const queues = createQueues();
 // worker processes, so adding workers can never trigger a 429 storm.
 await queues.sing.setGlobalConcurrency(env.PROVIDER_CONCURRENCY);
 
-const provider: SingingProvider = env.SINGING_PROVIDER === "elevenlabs" ? new ElevenLabsProvider(env.ELEVENLABS_API_KEY!) : new MockProvider(redis, catalog);
+const provider: SingingProvider =
+  env.SINGING_PROVIDER === "elevenlabs"
+    ? new ElevenLabsProvider(env.ELEVENLABS_API_KEY!)
+    : new MockProvider(redis, catalog);
 const songs = new SongRepo(redis);
 
 let worker: Worker<SingJobData> | undefined;
@@ -45,15 +48,29 @@ worker = new Worker<SingJobData>(QUEUE.sing, processor, {
 worker.on("failed", (job, err) => {
   if (!job) return;
   const final = job.attemptsMade >= (job.opts.attempts ?? 1);
-  logger.warn({ songId: job.data.songId, batch: job.data.batch?.length, attempt: job.attemptsMade, final, err: err.message }, "sing job failed");
+  logger.warn(
+    {
+      songId: job.data.songId,
+      batch: job.data.batch?.length,
+      attempt: job.attemptsMade,
+      final,
+      err: err.message,
+    },
+    "sing job failed",
+  );
   // Final failure: every song in this job's batch is marked failed; the next request
   // for any of them re-queues it (see createOrJoin).
-  if (final) for (const id of job.data.batch ?? [job.data.songId]) void songs.markFailed(id, err.message);
+  if (final)
+    for (const id of job.data.batch ?? [job.data.songId])
+      void songs.markFailed(id, err.message);
 });
 worker.on("error", (err) => logger.error({ err }, "worker error"));
 
 const metrics = startMetricsServer(env.WORKER_METRICS_PORT);
-logger.info({ provider: provider.name, slots: env.PROVIDER_CONCURRENCY }, "sing worker started");
+logger.info(
+  { provider: provider.name, slots: env.PROVIDER_CONCURRENCY },
+  "sing worker started",
+);
 
 onShutdown(async () => {
   await worker!.close(); // waits for active generations to finish

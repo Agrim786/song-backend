@@ -28,31 +28,35 @@ The singing provider is the bottleneck, not our servers. So users never talk to 
 ## 3. Measured numbers (real tests, keep them in the doc)
 
 ### ElevenLabs Music (Creator plan, $22/mo, 121,000 credits, $0.00018/credit)
-| Metric | Value |
-|---|---|
-| Concurrent generations allowed | **2** (3rd → `429 concurrent_limit_exceeded`, message states "maximum of 2 concurrent requests") |
-| Time per name (full mode, 21 names) | p50 3.89 s, p95 4.48 s, range 3.33–4.55 s, TTFB ~3.2 s (little streaming benefit) |
-| Throughput | ~0.57 names/s max (2 slots) → 1 lakh unique names ≈ 49 h |
-| Cost, full mode (27 s song returned) | **371 credits ≈ $0.067** |
-| Cost, clip mode (~12 s returned) | **165 credits ≈ $0.03** — billing is per second of audio returned (~13.7 credits/s) |
-| Clip-mode quality | No audible seams (tested by ear), names sung naturally to the melody |
-| Pronunciation | Devanagari lyrics give Indian pronunciation; Roman spelling drifts → send native script |
+
+| Metric                               | Value                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Concurrent generations allowed       | **2** (3rd → `429 concurrent_limit_exceeded`, message states "maximum of 2 concurrent requests") |
+| Time per name (full mode, 21 names)  | p50 3.89 s, p95 4.48 s, range 3.33–4.55 s, TTFB ~3.2 s (little streaming benefit)                |
+| Throughput                           | ~0.57 names/s max (2 slots) → 1 lakh unique names ≈ 49 h                                         |
+| Cost, full mode (27 s song returned) | **371 credits ≈ $0.067**                                                                         |
+| Cost, clip mode (~12 s returned)     | **165 credits ≈ $0.03** — billing is per second of audio returned (~13.7 credits/s)              |
+| Clip-mode quality                    | No audible seams (tested by ear), names sung naturally to the melody                             |
+| Pronunciation                        | Devanagari lyrics give Indian pronunciation; Roman spelling drifts → send native script          |
 
 ### ACE-Step 1.5 (free ACE Music cloud API, api.acemusic.ai)
-| Metric | Value |
-|---|---|
-| Repaint works | Yes — name section re-sung (hook_vs_source 0.05–0.46) |
-| Rest of song preserved | **Exactly** (rest_vs_source 0.996) — better than ElevenLabs |
-| Speed | 10.6 s alone, queued up to 27 s; effectively 1 at a time |
-| Overload | HTTP 502 + retry-after 60 beyond ~2–3 parallel |
-| Throughput | ~0.1 names/s |
-| Verdict | Free demo service, not production. Proves the open-source model works → **phase 2: self-host ACE-Step (MIT)** |
+
+| Metric                 | Value                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Repaint works          | Yes — name section re-sung (hook_vs_source 0.05–0.46)                                                         |
+| Rest of song preserved | **Exactly** (rest_vs_source 0.996) — better than ElevenLabs                                                   |
+| Speed                  | 10.6 s alone, queued up to 27 s; effectively 1 at a time                                                      |
+| Overload               | HTTP 502 + retry-after 60 beyond ~2–3 parallel                                                                |
+| Throughput             | ~0.1 names/s                                                                                                  |
+| Verdict                | Free demo service, not production. Proves the open-source model works → **phase 2: self-host ACE-Step (MIT)** |
 
 ### Template findings
+
 - **Leak finding:** kept sections are copied exactly into every song. The first template sang the placeholder ("Rahul") in kept sections too → every song said "Rahul". Fix: neutral placeholder word that fits the genre + instrumental intro/outro + verse forbids ad-libs + automatic speech-to-text leak check with retry.
 - All 3 current templates passed the leak check on the first attempt.
 
 ### Self-hosting estimate (unverified, from ACE-Step's own claims: <2 s/song on A100, batch 8)
+
 - Assuming ~0.25 GPU-s per name: 10,000 names ≈ 42 min on 1 GPU, ≈ 2 min on ~20 GPUs; 1 lakh in ~10 min ≈ 40 GPUs. Must be benchmarked before claiming.
 
 ---
@@ -75,18 +79,21 @@ The singing provider is the bottleneck, not our servers. So users never talk to 
 ```
 
 ### Request flows
+
 - **Cache hit:** song exists for (name, lang, template) → URL instantly.
 - **Joined:** same song already in progress → share that job (atomic Redis create-or-join + BullMQ jobId = songId). Songs with many waiters get priority bumps (only at 2, 4, 8… waiters).
 - **New:** queue → worker → ElevenLabs clip mode → stitch → storage → mark ready, add to pool.
 - **Spike (ETA > SPIKE_ETA_SECONDS):** picker prefers templates where this name already exists, else the small `spike: true` set so dedupe still works. If ETA > PREVIEW_ETA_SECONDS and a recording exists → instant own-voice preview.
 
 ### Load-aware picker
+
 ```
 calm (eta < threshold) → random(all templates for lang)
 busy → random(templates where this name is already ready) or random(spike set)
 ```
 
 ### Failure handling
+
 - 429 → `worker.rateLimit()` + `Worker.RateLimitError()` (job waits, no retry spent).
 - Repeated provider errors → circuit breaker opens 30 s, treated like a rate limit.
 - Final failure → song marked failed; next request for it re-queues.
@@ -94,6 +101,7 @@ busy → random(templates where this name is already ready) or random(spike set)
 - STT over budget → `needsTyping: true` (user types name).
 
 ### Honest limits (state in the doc)
+
 - 1 lakh **unique** names cannot be sung in minutes on a self-serve plan. Caching/dedupe shrink the work (hit rate unknown; Indian names are spread out). Everyone still gets something in seconds. Throughput scales only with provider capacity (Enterprise concurrency or self-hosted ACE-Step) — a cost dial, not a redesign.
 
 ---
@@ -102,14 +110,17 @@ busy → random(templates where this name is already ready) or random(spike set)
 
 Location on Agrim's Mac: `~/Projects/gumbo-assingment/song-backend` (note the folder spelling).
 Parent folder also has Python lab scripts (not part of the backend):
+
 - `name_song_lab_v3.py` — ElevenLabs inpainting experiments (template/name/batch/concurrency).
 - `ace_lab.py` — ACE-Step repaint experiments.
 - `lab_v3/`, `lab_out/`, `ace_out/` — experiment outputs.
 
 ### Stack
+
 Node 20.6+ (tested on 22), **Express 5**, **BullMQ 6**, **ioredis 6**, **TypeScript 7** (strict, NodeNext ESM — imports need `.js`), zod 4, pino, prom-client, multer, express-rate-limit + rate-limit-redis, @aws-sdk/client-s3, ffmpeg (system binary). Dev: tsx.
 
 ### Layout (component-based, like Immich / Novu / Node.js Best Practices)
+
 ```
 src/
   apps/        api.ts · sing-worker.ts · preview-worker.ts   (3 deployables, one codebase)
@@ -132,6 +143,7 @@ Dockerfile · docker-compose.yml · .env.example · README.md
 ```
 
 ### Template format (`templates/<id>.json`)
+
 ```json
 { "id": "hi-love-01", "version": 1, "lang": "hi", "genre": "love", "spike": true,
   "providerSongId": "<ElevenLabs song-id>", "modelId": "music_v2_5",
@@ -139,9 +151,11 @@ Dockerfile · docker-compose.yml · .env.example · README.md
   "slots": [ { "startMs": 6000, "endMs": 10000, "text": "[Hook]\nओ {name}, दिल कहे तेरा नाम", "styles": [...], "negativeStyles": [...] },
              { "startMs": 18000, "endMs": 22000, ... } ] }
 ```
+
 Layout of every template: 0–6 s instrumental intro · 6–10 s name slot · 10–18 s verse · 18–22 s name slot · 22–27 s instrumental outro. Catalog validation: slots ≥ 3 s (provider minimum), room for context, no overlapping contexts.
 
 ### Key code facts
+
 - **songId** = sha256(`templateId:vVersion:lang:nameKey`)[0..32]. **nameKey** = sha256(`lang:normalizedName`)[0..24].
 - **normalizeName**: NFC, letters/marks/space/'- only (blocks lyric injection like `[Verse]`), ≤ 40 chars, Latin → Title Case lyric + lowercase key, Devanagari unchanged.
 - **Clip plan:** per slot `[ref ctx before] + [generated slot with name] + [ref ctx after]`, `CLIP_CONTEXT_MS=1000`. Splice cuts at the middle of each context window with 40 ms crossfades; output length == template length (unit tested).
@@ -163,20 +177,26 @@ npm run dev:api                 # must log: api listening {"port":8080,"template
 npm run dev:sing                # logs provider: mock | elevenlabs
 npm run dev:preview
 ```
+
 Test:
+
 ```bash
 curl -i localhost:8080/readyz   # {"redis":true,"templates":3}
 curl -s -X POST localhost:8080/v1/songs -H 'content-type: application/json' -d '{"name":"स्नेहिल","lang":"hi"}'
 curl -s localhost:8080/v1/songs/<songId>
 curl -s -o /tmp/song.mp3 <url> && open /tmp/song.mp3   # bypass browser cache
 ```
+
 Templates:
+
 ```bash
 npx tsx --env-file=.env scripts/create-template.ts --genre love --spike    # also: pop, bhangra, sufi, lofi; --id hi-love-02; --dry-run
 ```
+
 Other: `npm run typecheck` · `npm test` · `npm run build` · `docker compose up --build`.
 
 ### Important env
+
 `SINGING_PROVIDER` (mock|elevenlabs) · `ELEVENLABS_API_KEY` · `PROVIDER_CONCURRENCY=2` · `CLIP_CONTEXT_MS=1000` · `STT_PROVIDER` (mock|sarvam) · `SARVAM_API_KEY` · `SPIKE_ETA_SECONDS=30` · `PREVIEW_ETA_SECONDS=30` · `STORAGE_DRIVER` (local|s3) · `LOADTEST_TOKEN` (bypasses per-IP limiter for k6) · `PORT=8080`.
 
 ---
@@ -189,6 +209,7 @@ Other: `npm run typecheck` · `npm test` · `npm run build` · `docker compose u
 - ✅ Unit tests (8) + typecheck pass.
 
 ### Patches given in chat — VERIFY they are applied locally
+
 1. **Express 5 listen bug** (`src/apps/api.ts`): Express 5 calls the listen callback with an error (e.g. EADDRINUSE), and the old code logged "api listening" anyway. Fix: `app.listen(PORT, (err?: Error) => { if (err) { logger.fatal(...); process.exit(1); } logger.info(...) })`.
 2. **Mock render** (`src/modules/singing/providers/mock.ts`): generated chunks now reuse the template audio at the same position (placeholder sung) instead of a near-silent sine, so a correct mock song sounds exactly like the template. Remove the unused `sha256` import.
 

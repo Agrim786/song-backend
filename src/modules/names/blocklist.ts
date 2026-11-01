@@ -20,5 +20,8 @@ const stems = [...blocked].filter((w) => w.length >= 5);
 
 export function isBlockedName(key: string): boolean {
   const joined = key.replace(/[\s'-]+/g, "");
-  return key.split(/[\s-]+/).some((part) => blocked.has(part)) || stems.some((w) => joined.includes(w));
+  return (
+    key.split(/[\s-]+/).some((part) => blocked.has(part)) ||
+    stems.some((w) => joined.includes(w))
+  );
 }

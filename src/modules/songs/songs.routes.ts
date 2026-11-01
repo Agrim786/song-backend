@@ -21,7 +21,8 @@ export function songRoutes(songs: SongService) {
   });
 
   r.get("/songs/:id", async (req, res) => {
-    if (!/^[a-f0-9]{32}$/.test(req.params.id)) throw new AppError(400, "bad_id", "Invalid song id");
+    if (!/^[a-f0-9]{32}$/.test(req.params.id))
+      throw new AppError(400, "bad_id", "Invalid song id");
     const view = await songs.view(req.params.id);
     hint(res, view);
     res.json(view);

@@ -84,8 +84,20 @@ export type JoinOutcome = "created" | "retry" | Exclude<SongStatus, "failed">;
 export class SongRepo {
   constructor(private readonly redis: Redis) {}
 
-  async createOrJoin(songId: string, f: { templateId: string; lang: string; name: string; nameKey: string }) {
-    const [outcome, waiters, updatedAt] = (await this.redis.eval(CREATE_OR_JOIN, 1, keys.song(songId), Date.now(), f.templateId, f.lang, f.name, f.nameKey)) as [JoinOutcome, string, string];
+  async createOrJoin(
+    songId: string,
+    f: { templateId: string; lang: string; name: string; nameKey: string },
+  ) {
+    const [outcome, waiters, updatedAt] = (await this.redis.eval(
+      CREATE_OR_JOIN,
+      1,
+      keys.song(songId),
+      Date.now(),
+      f.templateId,
+      f.lang,
+      f.name,
+      f.nameKey,
+    )) as [JoinOutcome, string, string];
     return { outcome, waiters: Number(waiters), updatedAt: Number(updatedAt) };
   }
 
@@ -108,36 +120,90 @@ export class SongRepo {
 
   // Puts a song in its template's waiting set (no-op if it is already there).
   enqueue(templateId: string, songId: string) {
-    return this.redis.eval(ENQUEUE, 2, keys.pending(templateId), keys.lineTicket(), songId);
+    return this.redis.eval(
+      ENQUEUE,
+      2,
+      keys.pending(templateId),
+      keys.lineTicket(),
+      songId,
+    );
   }
 
-  async claim(templateId: string, songId: string, max: number): Promise<string[]> {
-    return (await this.redis.eval(CLAIM, 1, keys.pending(templateId), songId, max, keys.songPrefix(), Date.now())) as string[];
+  async claim(
+    templateId: string,
+    songId: string,
+    max: number,
+  ): Promise<string[]> {
+    return (await this.redis.eval(
+      CLAIM,
+      1,
+      keys.pending(templateId),
+      songId,
+      max,
+      keys.songPrefix(),
+      Date.now(),
+    )) as string[];
   }
 
-  async positionInLine(templateId: string, songId: string, templateIds: string[]): Promise<number> {
+  async positionInLine(
+    templateId: string,
+    songId: string,
+    templateIds: string[],
+  ): Promise<number> {
     const keysAll = templateIds.map((id) => keys.pending(id));
-    return Number(await this.redis.eval(POSITION, keysAll.length, ...keysAll, keys.pending(templateId), songId));
+    return Number(
+      await this.redis.eval(
+        POSITION,
+        keysAll.length,
+        ...keysAll,
+        keys.pending(templateId),
+        songId,
+      ),
+    );
   }
 
   // Songs still waiting to be sung, across templates: the real backlog (BullMQ also
   // holds the no-op jobs of songs that were already sung inside someone's batch).
   async pendingCount(templateIds: string[]): Promise<number> {
-    const counts = await Promise.all(templateIds.map((id) => this.redis.zcard(keys.pending(id))));
+    const counts = await Promise.all(
+      templateIds.map((id) => this.redis.zcard(keys.pending(id))),
+    );
     return counts.reduce((a, b) => a + b, 0);
   }
 
-  async markReady(songId: string, url: string, lang: string, nameKey: string, tplRef: string) {
+  async markReady(
+    songId: string,
+    url: string,
+    lang: string,
+    nameKey: string,
+    tplRef: string,
+  ) {
     await this.redis
       .multi()
-      .hset(keys.song(songId), "status", "ready", "url", url, "updatedAt", Date.now())
+      .hset(
+        keys.song(songId),
+        "status",
+        "ready",
+        "url",
+        url,
+        "updatedAt",
+        Date.now(),
+      )
       // The pool the load-aware picker reads during spikes. Holds templateRef() (id + version).
       .sadd(keys.pool(lang, nameKey), tplRef)
       .exec();
   }
 
   markFailed(songId: string, error: string) {
-    return this.redis.hset(keys.song(songId), "status", "failed", "error", error.slice(0, 300), "updatedAt", Date.now());
+    return this.redis.hset(
+      keys.song(songId),
+      "status",
+      "failed",
+      "error",
+      error.slice(0, 300),
+      "updatedAt",
+      Date.now(),
+    );
   }
 
   readyTemplateRefs(lang: string, nameKey: string) {

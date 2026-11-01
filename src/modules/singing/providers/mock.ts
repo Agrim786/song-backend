@@ -41,7 +41,9 @@ export class MockProvider implements SingingProvider {
       const started = Date.now();
       const audio = await this.render(plan);
       const sung = plan.chunks.filter((c) => !isRef(c)).length;
-      const base = env.MOCK_LATENCY_MS + env.MOCK_LATENCY_PER_EXTRA_SECTION_MS * Math.max(0, sung - 2);
+      const base =
+        env.MOCK_LATENCY_MS +
+        env.MOCK_LATENCY_PER_EXTRA_SECTION_MS * Math.max(0, sung - 2);
       const target = base * (0.9 + Math.random() * 0.2);
       await sleep(Math.max(0, target - (Date.now() - started)));
       return audio;

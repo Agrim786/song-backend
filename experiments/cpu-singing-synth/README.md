@@ -19,26 +19,26 @@ the template's singer. Rejected for now. Run on 1 Nov 2026.
 
 ## Versions
 
-| Version | Change | Files |
-|---|---|---|
-| v1 | Whole spoken name stretched evenly onto the melody | `audio/v1-retuned-*.mp3` |
-| v2 | Consonants keep natural length; only vowels stretch | `audio/v2-consonants-kept-*.mp3` |
-| v3 | Same melody notes, one octave lower, near the voice's natural pitch | `audio/v3-octave-lower-*.mp3` |
-| Reference | ElevenLabs re-singing the name line (what we ship) | `audio/reference-elevenlabs-*.mp3` |
-| Original | The template with its placeholder word | `audio/00-template-original-placeholder-yaara.mp3` |
+| Version   | Change                                                              | Files                                              |
+| --------- | ------------------------------------------------------------------- | -------------------------------------------------- |
+| v1        | Whole spoken name stretched evenly onto the melody                  | `audio/v1-retuned-*.mp3`                           |
+| v2        | Consonants keep natural length; only vowels stretch                 | `audio/v2-consonants-kept-*.mp3`                   |
+| v3        | Same melody notes, one octave lower, near the voice's natural pitch | `audio/v3-octave-lower-*.mp3`                      |
+| Reference | ElevenLabs re-singing the name line (what we ship)                  | `audio/reference-elevenlabs-*.mp3`                 |
+| Original  | The template with its placeholder word                              | `audio/00-template-original-placeholder-yaara.mp3` |
 
 ## Measured
 
 Intelligibility = ElevenLabs speech-to-text on the first name spot, 12 names per
 version (`scripts/score_intelligibility.mjs`).
 
-| Version | Names exactly right | Average similarity |
-|---|---|---|
-| v1 | 3 / 12 | 55% |
-| v2 | 2 / 12 | 47% |
-| v3 | 7 / 12 | 80% |
-| Control: plain spoken name pasted in, no singing | 9 / 12 | 83% |
-| Control: through the vocoder, original pitch | 10 / 12 | 91% |
+| Version                                          | Names exactly right | Average similarity |
+| ------------------------------------------------ | ------------------- | ------------------ |
+| v1                                               | 3 / 12              | 55%                |
+| v2                                               | 2 / 12              | 47%                |
+| v3                                               | 7 / 12              | 80%                |
+| Control: plain spoken name pasted in, no singing | 9 / 12              | 83%                |
+| Control: through the vocoder, original pitch     | 10 / 12             | 91%                |
 
 The controls showed the music and the vocoder were not the problem; the pitch jump
 was. The template singer sings around 415 Hz and the speaking voice sits around

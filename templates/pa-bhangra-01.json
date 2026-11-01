@@ -20,10 +20,7 @@
         "punjabi vocals",
         "dhol"
       ],
-      "negativeStyles": [
-        "whisper",
-        "spoken word"
-      ]
+      "negativeStyles": ["whisper", "spoken word"]
     },
     {
       "startMs": 18000,
@@ -35,10 +32,7 @@
         "punjabi vocals",
         "dhol"
       ],
-      "negativeStyles": [
-        "whisper",
-        "spoken word"
-      ]
+      "negativeStyles": ["whisper", "spoken word"]
     }
   ]
 }

@@ -4,7 +4,14 @@ services:
   redis:
     image: redis:7-alpine
     # BullMQ requires noeviction: evicting queue keys would silently lose jobs.
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--maxmemory-policy",
+        "noeviction",
+      ]
     volumes: [redis-data:/data]
     restart: unless-stopped
 
@@ -25,7 +32,6 @@ services:
     volumes: [files:/app/data]
     depends_on: [redis]
     restart: unless-stopped
-
 
 volumes:
   redis-data: {}

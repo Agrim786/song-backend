@@ -17,26 +17,41 @@ export const clientKey = (req: Request) => {
 };
 
 // Counters live in Redis so the limit holds across every API instance.
-function limiter(redis: Redis, prefix: string, perMinute: number, key: (req: Request) => string) {
+function limiter(
+  redis: Redis,
+  prefix: string,
+  perMinute: number,
+  key: (req: Request) => string,
+) {
   return rateLimit({
     windowMs: 60_000,
     limit: perMinute,
     standardHeaders: "draft-8",
     legacyHeaders: false,
     keyGenerator: key,
-    skip: (req) => Boolean(env.LOADTEST_TOKEN) && req.get("x-loadtest-token") === env.LOADTEST_TOKEN,
-    message: { error: { code: "rate_limited", message: "Too many requests, slow down" } },
+    skip: (req) =>
+      Boolean(env.LOADTEST_TOKEN) &&
+      req.get("x-loadtest-token") === env.LOADTEST_TOKEN,
+    message: {
+      error: { code: "rate_limited", message: "Too many requests, slow down" },
+    },
     store: new RedisStore({
       prefix: `rl:${prefix}:`,
-      sendCommand: (command: string, ...args: string[]) => redis.call(command, ...args) as Promise<RedisReply>,
+      sendCommand: (command: string, ...args: string[]) =>
+        redis.call(command, ...args) as Promise<RedisReply>,
     }),
   });
 }
 
 // Per user (device id, else IP).
-export const perClientLimiter = (redis: Redis, prefix: string, perMinute: number) => limiter(redis, prefix, perMinute, clientKey);
+export const perClientLimiter = (
+  redis: Redis,
+  prefix: string,
+  perMinute: number,
+) => limiter(redis, prefix, perMinute, clientKey);
 
 // Backstop per IP, set high enough for a carrier NAT full of real users. Device ids
 // can be faked, so this only bounds a single machine rotating them; app attestation
 // (Play Integrity / App Attest) is the real fix before a public launch.
-export const perIpCeiling = (redis: Redis, perMinute: number) => limiter(redis, "ip", perMinute, ipKey);
+export const perIpCeiling = (redis: Redis, perMinute: number) =>
+  limiter(redis, "ip", perMinute, ipKey);

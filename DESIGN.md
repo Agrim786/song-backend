@@ -21,22 +21,22 @@ The AI singer is the bottleneck, not our servers: ElevenLabs sings at most 2 son
 
 A handful of terms carry the whole design; each is explained once here.
 
-| Term | Meaning |
-| --- | --- |
-| Template | A pre-made 27-second song with a neutral placeholder word where a name goes. 34 exist: 5 languages, several styles, each in a male and a female voice |
-| Name spot | One of the two 4-second places in a template where the name is sung (at 6 s and 18 s) |
-| Clip mode | Asking ElevenLabs to re-sing only the two name spots plus 1 second of music either side, instead of the whole song |
-| Stitching | Cutting the newly sung parts into the template on our server (ffmpeg), so the result is the full song with the user's name |
-| Song id | A hash of template, version, language and name. Same inputs, same song, for every user, forever |
-| Join | A request for a song that is already being made shares that job instead of starting a new one |
-| Slot | One of the 2 songs ElevenLabs lets us make at the same time on our plan |
-| Batch | Up to 5 different names sung in one ElevenLabs call (same template), used when there is a line |
-| Spike set | 2 templates per language that a rush is steered onto, so batches stay full and identical names collapse |
-| Place in line | Each waiting song gets a ticket number; a user's wait is worked out from how many songs are ahead of theirs |
-| Wait band | What the app is told: **short** (music plays, song lands soon) or **later** (come back in a bit) |
-| Intro hand-over | The app plays the template the moment you tap, then switches to your song at the same spot in the music |
-| Mock singer | A fake ElevenLabs used for load tests: same timing and limits, no credits spent |
-| Credits | ElevenLabs' billing unit. About 165 per new name in clip mode |
+| Term            | Meaning                                                                                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Template        | A pre-made 27-second song with a neutral placeholder word where a name goes. 34 exist: 5 languages, several styles, each in a male and a female voice |
+| Name spot       | One of the two 4-second places in a template where the name is sung (at 6 s and 18 s)                                                                 |
+| Clip mode       | Asking ElevenLabs to re-sing only the two name spots plus 1 second of music either side, instead of the whole song                                    |
+| Stitching       | Cutting the newly sung parts into the template on our server (ffmpeg), so the result is the full song with the user's name                            |
+| Song id         | A hash of template, version, language and name. Same inputs, same song, for every user, forever                                                       |
+| Join            | A request for a song that is already being made shares that job instead of starting a new one                                                         |
+| Slot            | One of the 2 songs ElevenLabs lets us make at the same time on our plan                                                                               |
+| Batch           | Up to 5 different names sung in one ElevenLabs call (same template), used when there is a line                                                        |
+| Spike set       | 2 templates per language that a rush is steered onto, so batches stay full and identical names collapse                                               |
+| Place in line   | Each waiting song gets a ticket number; a user's wait is worked out from how many songs are ahead of theirs                                           |
+| Wait band       | What the app is told: **short** (music plays, song lands soon) or **later** (come back in a bit)                                                      |
+| Intro hand-over | The app plays the template the moment you tap, then switches to your song at the same spot in the music                                               |
+| Mock singer     | A fake ElevenLabs used for load tests: same timing and limits, no credits spent                                                                       |
+| Credits         | ElevenLabs' billing unit. About 165 per new name in clip mode                                                                                         |
 
 ## The product
 
@@ -49,14 +49,14 @@ One screen, four steps; the user only ever gives a name and a language, and the 
 
 **What the user is told while waiting.** Never a countdown that might slip.
 
-| Situation | What they see and hear |
-| --- | --- |
-| Song already exists (someone with that name made it) | Plays immediately |
-| Short line | Music starts at once; the name lands a few seconds later |
-| Song not ready when the music reaches the name | The music fades and waits there ("Almost there"), then continues with the name |
-| Long line | "Lots of songs being made right now. Come back in a bit, yours will be waiting here." The app remembers the song and picks it up when reopened |
-| Song failed | "That one didn't come out" and a Try again button |
-| Offensive name | Refused with a short message |
+| Situation                                            | What they see and hear                                                                                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Song already exists (someone with that name made it) | Plays immediately                                                                                                                              |
+| Short line                                           | Music starts at once; the name lands a few seconds later                                                                                       |
+| Song not ready when the music reaches the name       | The music fades and waits there ("Almost there"), then continues with the name                                                                 |
+| Long line                                            | "Lots of songs being made right now. Come back in a bit, yours will be waiting here." The app remembers the song and picks it up when reopened |
+| Song failed                                          | "That one didn't come out" and a Try again button                                                                                              |
+| Offensive name                                       | Refused with a short message                                                                                                                   |
 
 **Built to be light on cheap phones:** one screen, few libraries, no image or icon packs, animations on the native thread, small uploads, timeouts and retries on every call. The Android APK is 36.8 MB.
 
@@ -64,14 +64,14 @@ One screen, four steps; the user only ever gives a name and a language, and the 
 
 The obvious design (each tap asks the AI for a full new song) cannot survive a rush, and adding servers does not help, because the limit belongs to the AI provider, not to us.
 
-|  | Obvious: full song per tap | This design: name only, batched |
-| --- | --- | --- |
-| Songs the provider makes at once | 2 (a 3rd is refused with HTTP 429) | 2, each carrying up to 5 names |
-| Speed | about 0.5 songs per second | about 1.4 new names per second |
-| 5,000 users, all different names | about 2.7 hours | about 1 hour |
-| 1,00,000 users, all different names | about 50 hours | about 20 hours |
-| Cost per new song | 371 credits, about $0.067 | 165 credits, about $0.03 |
-| Repeated names | sung again every time | free and instant |
+|                                     | Obvious: full song per tap         | This design: name only, batched |
+| ----------------------------------- | ---------------------------------- | ------------------------------- |
+| Songs the provider makes at once    | 2 (a 3rd is refused with HTTP 429) | 2, each carrying up to 5 names  |
+| Speed                               | about 0.5 songs per second         | about 1.4 new names per second  |
+| 5,000 users, all different names    | about 2.7 hours                    | about 1 hour                    |
+| 1,00,000 users, all different names | about 50 hours                     | about 20 hours                  |
+| Cost per new song                   | 371 credits, about $0.067          | 165 credits, about $0.03        |
+| Repeated names                      | sung again every time              | free and instant                |
 
 So the design has four jobs: make fewer singing calls (reuse and share songs), make each call cheaper and fuller (sing only the name, 5 at a time), never overload the provider (one queue capped at its limit), and be honest with each user about their wait.
 
@@ -94,25 +94,25 @@ Four containers on one server (Caddy, API, Redis, sing worker) serve the app, an
      └──── intro first, then the song ◄── Storage / CDN (songs + templates, cached)
 ```
 
-| Part | What it does | Built with |
-| --- | --- | --- |
-| Phone app | Records the name, confirms it, picks the language, plays the intro and swaps in the song | Expo SDK 58 (React Native), Zustand + MMKV for local state, TanStack Query for server calls |
-| Caddy | The only public door: automatic HTTPS, forwards to the API, hides internal metrics | Caddy 2 |
-| API | Takes requests, picks the template, creates or joins the song, works out each user's wait. Keeps no state of its own, so more copies can run side by side | Node 22, Express 5, TypeScript |
-| Redis | Song records, the waiting line, the job queue, rate-limit counters, idempotency keys | Redis 7, set never to evict data |
-| Sing worker | Takes waiting songs (1, or up to 5 when busy), calls ElevenLabs, checks the result, stitches each song, saves it | BullMQ queue, ffmpeg |
-| ElevenLabs | Sings the name spots (Music API, clip mode) and turns speech into text (Scribe) | External service |
-| Files | Finished songs and template audio, cached forever since they never change | Server disk today; cloud storage + CDN when there is more than one server |
+| Part        | What it does                                                                                                                                              | Built with                                                                                  |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Phone app   | Records the name, confirms it, picks the language, plays the intro and swaps in the song                                                                  | Expo SDK 58 (React Native), Zustand + MMKV for local state, TanStack Query for server calls |
+| Caddy       | The only public door: automatic HTTPS, forwards to the API, hides internal metrics                                                                        | Caddy 2                                                                                     |
+| API         | Takes requests, picks the template, creates or joins the song, works out each user's wait. Keeps no state of its own, so more copies can run side by side | Node 22, Express 5, TypeScript                                                              |
+| Redis       | Song records, the waiting line, the job queue, rate-limit counters, idempotency keys                                                                      | Redis 7, set never to evict data                                                            |
+| Sing worker | Takes waiting songs (1, or up to 5 when busy), calls ElevenLabs, checks the result, stitches each song, saves it                                          | BullMQ queue, ffmpeg                                                                        |
+| ElevenLabs  | Sings the name spots (Music API, clip mode) and turns speech into text (Scribe)                                                                           | External service                                                                            |
+| Files       | Finished songs and template audio, cached forever since they never change                                                                                 | Server disk today; cloud storage + CDN when there is more than one server                   |
 
 **What happens to each request:**
 
-| Request | What the system does | What the user gets |
-| --- | --- | --- |
-| Name already sung in that template | Nothing new | The song, immediately |
-| Same name already being made | Joins that job; popular names move up the line | The same song when it lands |
-| New name, short line | Joins the line; sung alone (fastest) | Music at once, name a few seconds later |
-| New name, long line | Steered onto the 2 spike templates, sung 5 per call | Their own wait, from their place in line |
-| Further back than about 1 minute | Stays in line, saved on the phone | "Come back in a bit", song waiting when they return |
+| Request                            | What the system does                                | What the user gets                                  |
+| ---------------------------------- | --------------------------------------------------- | --------------------------------------------------- |
+| Name already sung in that template | Nothing new                                         | The song, immediately                               |
+| Same name already being made       | Joins that job; popular names move up the line      | The same song when it lands                         |
+| New name, short line               | Joins the line; sung alone (fastest)                | Music at once, name a few seconds later             |
+| New name, long line                | Steered onto the 2 spike templates, sung 5 per call | Their own wait, from their place in line            |
+| Further back than about 1 minute   | Stays in line, saved on the phone                   | "Come back in a bit", song waiting when they return |
 
 **The API in five calls:** `GET /v1/languages` (what to offer), `POST /v1/names/transcribe` (recording to text), `POST /v1/songs` (make or reuse a song), `GET /v1/songs/:id` (status, with a hint for when to ask again), and `GET /files/...` (the audio).
 
@@ -132,29 +132,29 @@ A song is a template with the user's name sung into two short spots; only those 
 
 Each layer either removes work before it reaches the AI singer or makes the remaining wait honest; all of them are built and were exercised in load tests.
 
-| # | Layer | What it does | Evidence |
-| --- | --- | --- | --- |
-| 1 | Front door | Rate limits per phone (a random id made at install), not per IP, because many Indian mobile users share one carrier IP; a high per-IP ceiling stops scripts. One idempotency key per tap, so retries never create a second song. Speech-to-text has its own budget; over it, the user types | 200 users on one IP: 0 songs before the fix, 200 after |
-| 2 | Reuse | A finished song is never made again; files are cached for a year | Song ids are a hash; unit tested |
-| 3 | Join | Requests for a song already being made share that job (an atomic Redis step); names many people are waiting for move up the line | 5,000 requests for 100 names became 200 jobs |
-| 4 | Load-aware picker | Quiet: any template, for variety. Busy: a template this name already has, else the 2 spike templates, so batches fill and the same names collapse. Each arrival is counted before picking, so even a burst inside one second is noticed | A sub-second burst of 2,000 landed on exactly 2 templates |
-| 5 | Capped queue | At most 2 ElevenLabs calls at once, across all workers. A 429 pauses the queue without using up retries; repeated failures pause calls for 30 s | Never more than 2 calls at once, zero 429s, in every test |
-| 6 | Batching | 1 name per call when quiet (fastest), up to 5 when there is a line | 2.3x throughput, measured on the real API |
-| 7 | Place in line | Every waiting song gets a ticket number; each user's wait comes from the songs ahead of theirs, counted in rounds of batches, with a 20% safety margin | 48 of 50 promises kept in a 2,000-user test on the laptop |
-| 8 | Honest messages | Short wait: music plays, song lands. Over about a minute: "come back in a bit", and the phone checks once a minute | 5,000 waiting phones made about 56 requests per second instead of about 3,300 |
-| 9 | CPU split | Song-making is limited so answering users always has CPU | Last of 5,000 answered in 11.7 s instead of 15.6 s on the VPS |
+| #   | Layer             | What it does                                                                                                                                                                                                                                                                                | Evidence                                                                      |
+| --- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1   | Front door        | Rate limits per phone (a random id made at install), not per IP, because many Indian mobile users share one carrier IP; a high per-IP ceiling stops scripts. One idempotency key per tap, so retries never create a second song. Speech-to-text has its own budget; over it, the user types | 200 users on one IP: 0 songs before the fix, 200 after                        |
+| 2   | Reuse             | A finished song is never made again; files are cached for a year                                                                                                                                                                                                                            | Song ids are a hash; unit tested                                              |
+| 3   | Join              | Requests for a song already being made share that job (an atomic Redis step); names many people are waiting for move up the line                                                                                                                                                            | 5,000 requests for 100 names became 200 jobs                                  |
+| 4   | Load-aware picker | Quiet: any template, for variety. Busy: a template this name already has, else the 2 spike templates, so batches fill and the same names collapse. Each arrival is counted before picking, so even a burst inside one second is noticed                                                     | A sub-second burst of 2,000 landed on exactly 2 templates                     |
+| 5   | Capped queue      | At most 2 ElevenLabs calls at once, across all workers. A 429 pauses the queue without using up retries; repeated failures pause calls for 30 s                                                                                                                                             | Never more than 2 calls at once, zero 429s, in every test                     |
+| 6   | Batching          | 1 name per call when quiet (fastest), up to 5 when there is a line                                                                                                                                                                                                                          | 2.3x throughput, measured on the real API                                     |
+| 7   | Place in line     | Every waiting song gets a ticket number; each user's wait comes from the songs ahead of theirs, counted in rounds of batches, with a 20% safety margin                                                                                                                                      | 48 of 50 promises kept in a 2,000-user test on the laptop                     |
+| 8   | Honest messages   | Short wait: music plays, song lands. Over about a minute: "come back in a bit", and the phone checks once a minute                                                                                                                                                                          | 5,000 waiting phones made about 56 requests per second instead of about 3,300 |
+| 9   | CPU split         | Song-making is limited so answering users always has CPU                                                                                                                                                                                                                                    | Last of 5,000 answered in 11.7 s instead of 15.6 s on the VPS                 |
 
 ## Under pressure: 1 to 1,00,000 users
 
 Two separate things happen in a rush: the server answering every user quickly (grows with CPU and servers), and new names being sung (fixed at about 85 per minute by the AI plan). Rows assume everyone taps within the same minute, every name is new (the worst case), and today's €7.99 server.
 
-| Users | Everyone gets an answer | Songs |
-| --- | --- | --- |
-| 1 | About 0.1 s | Ready in about 5 to 7 s; music plays from the first second |
-| 100 | Instantly | The first \~50 hear theirs within a minute; the rest within about 1 to 2 minutes |
-| 5,000 | Within about 12 s on this server (1.5 s on a laptop), zero errors (measured) | The first \~40 to 50 within a minute; everyone else "come back"; all done in about an hour |
-| 10,000 | About 25 s on this server: needs a second API copy or a bigger CPU | About 2 hours |
-| 1,00,000 | Needs several API copies or machines (about 1,700 requests per second) | About 20 hours on the current plan, and far more credits than the plan includes |
+| Users    | Everyone gets an answer                                                      | Songs                                                                                      |
+| -------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1        | About 0.1 s                                                                  | Ready in about 5 to 7 s; music plays from the first second                                 |
+| 100      | Instantly                                                                    | The first \~50 hear theirs within a minute; the rest within about 1 to 2 minutes           |
+| 5,000    | Within about 12 s on this server (1.5 s on a laptop), zero errors (measured) | The first \~40 to 50 within a minute; everyone else "come back"; all done in about an hour |
+| 10,000   | About 25 s on this server: needs a second API copy or a bigger CPU           | About 2 hours                                                                              |
+| 1,00,000 | Needs several API copies or machines (about 1,700 requests per second)       | About 20 hours on the current plan, and far more credits than the plan includes            |
 
 **Real crowds repeat names.** Every repeated name is instant and free, so these all-new-name numbers are the worst case.
 
@@ -163,11 +163,11 @@ Two separate things happen in a rush: the server answering every user quickly (g
 On today's plan, if all 1,00,000 names are new, the last one waits about 20 hours. They are never shown that number; they are asked to come back, and the song waits for them. But the real answer is capacity, sized up front. One provider slot sings about 0.7 new names per second (measured), so:
 
 | Last user's wait (1,00,000 new names) | Provider slots needed |
-| --- | --- |
-| About 20 hours | 2 (today) |
-| 1 hour | About 40 |
-| 10 minutes | About 240 |
-| 2 minutes | About 1,200 |
+| ------------------------------------- | --------------------- |
+| About 20 hours                        | 2 (today)             |
+| 1 hour                                | About 40              |
+| 10 minutes                            | About 240             |
+| 2 minutes                             | About 1,200           |
 
 The singing bill is the same in every row, about $3,000 for 1,00,000 new names; what changes is how many slots run at once (a bigger ElevenLabs plan or our own GPUs). In practice 1,00,000 people arrive together because of something scheduled (an ad, a launch), so capacity is raised for that window. A surprise spike gets the same safe behaviour: no errors, repeats instant, new names in fair order.
 
@@ -177,30 +177,30 @@ Everything in this section was run, not estimated, between 31 Oct and 1 Nov 2026
 
 **The real ElevenLabs API** (Creator plan, clip mode):
 
-| Test | Result |
-| --- | --- |
-| Songs at once | 2; a 3rd is refused with 429 "concurrent\_limit\_exceeded" |
-| 1 name per call | 3.3 to 3.7 s |
-| 5 names per call | 6.9 to 7.4 s |
-| 10 names per call | Refused: at most 30 sections per call |
-| Throughput on 2 slots | 0.6 names/s at 1 per call, 1.41 at 5 per call (2.3x) |
-| Names sung correctly (speech-to-text check) | 30 of 30 in batched calls; "Rahul" correct in all 4 new languages |
-| Cost per new name | About 165 credits (about $0.03), the same batched or not; a full song is 371 |
-| Returned length | Always planned + 24 ms |
-| Streaming | Fails whenever clip mode is used; for fresh songs it saved only about 1 s |
-| Template generation | 34 templates; the 27 new ones cost 8,786 credits; 25 of 27 passed the leak check first time |
+| Test                                        | Result                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Songs at once                               | 2; a 3rd is refused with 429 "concurrent\_limit\_exceeded"                                  |
+| 1 name per call                             | 3.3 to 3.7 s                                                                                |
+| 5 names per call                            | 6.9 to 7.4 s                                                                                |
+| 10 names per call                           | Refused: at most 30 sections per call                                                       |
+| Throughput on 2 slots                       | 0.6 names/s at 1 per call, 1.41 at 5 per call (2.3x)                                        |
+| Names sung correctly (speech-to-text check) | 30 of 30 in batched calls; "Rahul" correct in all 4 new languages                           |
+| Cost per new name                           | About 165 credits (about $0.03), the same batched or not; a full song is 371                |
+| Returned length                             | Always planned + 24 ms                                                                      |
+| Streaming                                   | Fails whenever clip mode is used; for fresh songs it saved only about 1 s                   |
+| Template generation                         | 34 templates; the 27 new ones cost 8,786 credits; 25 of 27 passed the leak check first time |
 
 **Load tests** (a mock singer with the measured timing and the 2-at-once limit, so no credits are spent):
 
-|  | MacBook Air M4 | Live VPS (2 vCPU, €7.99/month) |
-| --- | --- | --- |
-| 5,000 users at once: last one answered | 1.5 s | 11.7 to 13.3 s |
-| Errors | 0 | 0 |
-| Requests answered per second | about 3,300 | about 350 to 400 |
-| 5,000 waiting phones checking back | n/a | about 56 per second, p95 114 ms, 0 errors |
-| Time to make one song (whole job, per song) | 2.2 s | 3.1 to 3.7 s |
-| Wait promises kept for the front of the line | 48 of 50 | 9 to 16 of 23 to 49 |
-| Memory used by the whole system | n/a | about 250 MB of 2 GB |
+|                                              | MacBook Air M4 | Live VPS (2 vCPU, €7.99/month)            |
+| -------------------------------------------- | -------------- | ----------------------------------------- |
+| 5,000 users at once: last one answered       | 1.5 s          | 11.7 to 13.3 s                            |
+| Errors                                       | 0              | 0                                         |
+| Requests answered per second                 | about 3,300    | about 350 to 400                          |
+| 5,000 waiting phones checking back           | n/a            | about 56 per second, p95 114 ms, 0 errors |
+| Time to make one song (whole job, per song)  | 2.2 s          | 3.1 to 3.7 s                              |
+| Wait promises kept for the front of the line | 48 of 50       | 9 to 16 of 23 to 49                       |
+| Memory used by the whole system              | n/a            | about 250 MB of 2 GB                      |
 
 **How to read the VPS column:** the answers are about 8x slower than the laptop on the same code, which is the CPU, not the design. Wait promises for the front of the line miss by 10 to 30 s there because song-making and answering share 2 slow CPUs during the burst, so speed swings; on the laptop they held. The test client ran over a phone hotspot with 200 connections, so some of the answer time is the client's own network.
 
@@ -208,49 +208,49 @@ Everything in this section was run, not estimated, between 31 Oct and 1 Nov 2026
 
 All but one bug below were found by running the system (load tests, an emulator, a real phone), and every fix was checked by running it again.
 
-| Bug | How it showed up | Fix | Checked |
-| --- | --- | --- | --- |
-| A burst inside one second was treated as calm (everyone told "0 s") | Load test | Count each arrival immediately, not after the line is read | 4,230 of 5,000 steered correctly |
-| Users sharing one IP were locked out | 200 users from one IP got 0 songs | Limit per phone id, with a high per-IP ceiling | 200 of 200 |
-| A song could wait forever with no job behind it after a crash | Simulated crash | The next request for that name notices and re-queues it | Re-queued, counted in a metric |
-| After a template update, "already made" pointed at missing songs | Code review | Remember template version too | Unit test |
-| Everyone in a rush was told "come back later", even the front | VPS load test | Each user's wait from their own place in line | 0 to \~50 users get the instant experience |
-| Places in line jumped in steps | Laptop test | Ticket numbers instead of millisecond timestamps (dozens of requests share a millisecond) | Smooth waits, 4 to 60 s |
-| A sub-second burst scattered over 10 templates | Laptop test | Count arrivals before choosing a template | Burst lands on 2 templates, batches full |
-| Wait promises too optimistic | Laptop test | Time whole jobs (singing and stitching), count in rounds of 5, 20% margin | 48 of 50 kept |
-| Song-making starved the API of CPU | VPS monitor | Give song-making low CPU priority (tested; the live server still runs an earlier 1-core cap until this is deployed) | Answers 15.6 s to 11.7 s |
-| Offensive "names" were sung | Emulator audit | Blocklist (Hindi, Punjabi, English; Latin and Indian scripts) that also catches spelling variants and splits, without blocking real names like Gandhi | Unit test |
-| Speech-to-text never worked on phones | Server logs showed zero upload requests | Expo SDK 58's fetch rejects React Native's old file format; upload via Expo's own File class | Server receives the recording, HTTP 200 |
-| App stuck forever on a saved song the server no longer knew | Emulator | An "unknown song" answer clears it and starts over | Checked on emulator |
-| 0.4 s silence when the song took over from the intro | Real phone, first play only | Start the song silently, line it up, crossfade | Confirmed by ear on a real phone |
+| Bug                                                                 | How it showed up                        | Fix                                                                                                                                                   | Checked                                    |
+| ------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| A burst inside one second was treated as calm (everyone told "0 s") | Load test                               | Count each arrival immediately, not after the line is read                                                                                            | 4,230 of 5,000 steered correctly           |
+| Users sharing one IP were locked out                                | 200 users from one IP got 0 songs       | Limit per phone id, with a high per-IP ceiling                                                                                                        | 200 of 200                                 |
+| A song could wait forever with no job behind it after a crash       | Simulated crash                         | The next request for that name notices and re-queues it                                                                                               | Re-queued, counted in a metric             |
+| After a template update, "already made" pointed at missing songs    | Code review                             | Remember template version too                                                                                                                         | Unit test                                  |
+| Everyone in a rush was told "come back later", even the front       | VPS load test                           | Each user's wait from their own place in line                                                                                                         | 0 to \~50 users get the instant experience |
+| Places in line jumped in steps                                      | Laptop test                             | Ticket numbers instead of millisecond timestamps (dozens of requests share a millisecond)                                                             | Smooth waits, 4 to 60 s                    |
+| A sub-second burst scattered over 10 templates                      | Laptop test                             | Count arrivals before choosing a template                                                                                                             | Burst lands on 2 templates, batches full   |
+| Wait promises too optimistic                                        | Laptop test                             | Time whole jobs (singing and stitching), count in rounds of 5, 20% margin                                                                             | 48 of 50 kept                              |
+| Song-making starved the API of CPU                                  | VPS monitor                             | Give song-making low CPU priority (tested; the live server still runs an earlier 1-core cap until this is deployed)                                   | Answers 15.6 s to 11.7 s                   |
+| Offensive "names" were sung                                         | Emulator audit                          | Blocklist (Hindi, Punjabi, English; Latin and Indian scripts) that also catches spelling variants and splits, without blocking real names like Gandhi | Unit test                                  |
+| Speech-to-text never worked on phones                               | Server logs showed zero upload requests | Expo SDK 58's fetch rejects React Native's old file format; upload via Expo's own File class                                                          | Server receives the recording, HTTP 200    |
+| App stuck forever on a saved song the server no longer knew         | Emulator                                | An "unknown song" answer clears it and starts over                                                                                                    | Checked on emulator                        |
+| 0.4 s silence when the song took over from the intro                | Real phone, first play only             | Start the song silently, line it up, crossfade                                                                                                        | Confirmed by ear on a real phone           |
 
 ## Tried and rejected
 
 Each idea below was built or measured and then dropped for a stated reason, so what remains in the design is what survived evidence.
 
-| Idea | What was found | Verdict |
-| --- | --- | --- |
-| Own-voice preview: play the template with the user's own recording of their name while the sung version waits | Instant, but it sounds like a voice pasted over music; and 5,000 of them took about 6 minutes of server CPU | Dropped. The intro hand-over replaced it |
-| CPU singing synthesizer: retune a spoken name onto the template's notes on our own server | About 0.2 s of CPU per name, so it would scale cheaply; intelligibility improved from 55% to 80% with tuning, but by ear the name is clearly a different, pasted-in voice | Rejected. Audio, scripts and scores are in the repo under `experiments/cpu-singing-synth` |
-| Streaming the AI's audio as it is made | Fails whenever clip mode is used; even for fresh songs it saved only about 1 s | Rejected |
-| Pre-singing a list of popular names | Cannot cover the long tail of Indian names; any unlisted name still waits | Not the design: songs are reused as they are made instead |
-| Hosting our own music model | Removes the 2-at-once limit, but every new name still costs GPU time; 5,000 new names in 10 s would need roughly 250 to 500 warm GPUs (estimate) | Phase 2 capacity lever, not a spike fix |
-| A syllable bank: pre-sing every syllable in the template singer's voice and join them per name | Finite and complete in theory (a few thousand units), but joining sung pieces smoothly is hard and it is days of work | Idea only, not built |
-| A load balancer on today's single server | Splitting requests across API copies helps only with spare CPU; this box has 2 cores shared with song-making | Deferred: needs more CPU first |
-| A hard 1-core limit on song-making | Kept the API responsive but slowed song-making to 18 to 21 s per batch on the VPS | Replaced in testing by low priority (12 s per batch, faster answers) |
+| Idea                                                                                                          | What was found                                                                                                                                                            | Verdict                                                                                   |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Own-voice preview: play the template with the user's own recording of their name while the sung version waits | Instant, but it sounds like a voice pasted over music; and 5,000 of them took about 6 minutes of server CPU                                                               | Dropped. The intro hand-over replaced it                                                  |
+| CPU singing synthesizer: retune a spoken name onto the template's notes on our own server                     | About 0.2 s of CPU per name, so it would scale cheaply; intelligibility improved from 55% to 80% with tuning, but by ear the name is clearly a different, pasted-in voice | Rejected. Audio, scripts and scores are in the repo under `experiments/cpu-singing-synth` |
+| Streaming the AI's audio as it is made                                                                        | Fails whenever clip mode is used; even for fresh songs it saved only about 1 s                                                                                            | Rejected                                                                                  |
+| Pre-singing a list of popular names                                                                           | Cannot cover the long tail of Indian names; any unlisted name still waits                                                                                                 | Not the design: songs are reused as they are made instead                                 |
+| Hosting our own music model                                                                                   | Removes the 2-at-once limit, but every new name still costs GPU time; 5,000 new names in 10 s would need roughly 250 to 500 warm GPUs (estimate)                          | Phase 2 capacity lever, not a spike fix                                                   |
+| A syllable bank: pre-sing every syllable in the template singer's voice and join them per name                | Finite and complete in theory (a few thousand units), but joining sung pieces smoothly is hard and it is days of work                                                     | Idea only, not built                                                                      |
+| A load balancer on today's single server                                                                      | Splitting requests across API copies helps only with spare CPU; this box has 2 cores shared with song-making                                                              | Deferred: needs more CPU first                                                            |
+| A hard 1-core limit on song-making                                                                            | Kept the API responsive but slowed song-making to 18 to 21 s per batch on the VPS                                                                                         | Replaced in testing by low priority (12 s per batch, faster answers)                      |
 
 ## Deployment and security
 
 The whole backend runs on one small Mumbai VPS, deployed from GitHub, with only HTTPS open to the internet.
 
-|  |  |
-| --- | --- |
-| Server | €7.99/month KVM VPS, Mumbai: 2 vCPU, 2 GB RAM plus 2 GB swap, 40 GB SSD, Ubuntu 24.04, Docker |
-| Address | `https://103-215-216-51.sslip.io` (sslip.io turns the IP into a name, so Let's Encrypt can issue a real certificate without buying a domain) |
-| Containers | Caddy, API, sing worker, Redis (persistent, never evicts data) |
-| HTTPS | Caddy gets and renews the certificate automatically; plain http redirects to https |
-| Deploys | The server is a git clone of `song-backend`, read through a read-only deploy key. `scripts/deploy.sh` refuses uncommitted or unpushed work, runs the type check and tests, then the server pulls, rebuilds and checks its own health. Production is always exactly a commit on GitHub |
-| App | Android release APK (36.8 MB, arm64 and armv7), talking only to the HTTPS address |
+|            |                                                                                                                                                                                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Server     | €7.99/month KVM VPS, Mumbai: 2 vCPU, 2 GB RAM plus 2 GB swap, 40 GB SSD, Ubuntu 24.04, Docker                                                                                                                                                                                         |
+| Address    | `https://103-215-216-51.sslip.io` (sslip.io turns the IP into a name, so Let's Encrypt can issue a real certificate without buying a domain)                                                                                                                                          |
+| Containers | Caddy, API, sing worker, Redis (persistent, never evicts data)                                                                                                                                                                                                                        |
+| HTTPS      | Caddy gets and renews the certificate automatically; plain http redirects to https                                                                                                                                                                                                    |
+| Deploys    | The server is a git clone of `song-backend`, read through a read-only deploy key. `scripts/deploy.sh` refuses uncommitted or unpushed work, runs the type check and tests, then the server pulls, rebuilds and checks its own health. Production is always exactly a commit on GitHub |
+| App        | Android release APK (36.8 MB, arm64 and armv7), talking only to the HTTPS address                                                                                                                                                                                                     |
 
 **Security measures:**
 
@@ -266,24 +266,24 @@ The whole backend runs on one small Mumbai VPS, deployed from GitHub, with only 
 
 Everything except singing grows by adding ordinary servers; singing grows only with money.
 
-| Part | How it grows | What limits it today |
-| --- | --- | --- |
-| API | Keeps no state, so more copies run side by side behind Caddy (which also balances load) | CPU: one copy on this VPS answers about 350 to 400 requests per second |
-| Song-making (stitching) | A separate song-making server, or more cores | CPU: about 3 s per song on this VPS, 2.2 s on a laptop |
-| Singing | A bigger ElevenLabs plan (more songs at once) or our own GPUs | The plan: 2 at once, about 85 new names per minute |
-| Redis | One node is plenty here; managed Redis for failover | Memory (tiny: the whole system used about 250 MB) |
-| Song files | Cloud storage plus a CDN once there is more than one server | Bandwidth: 200 Mbit/s is about 35 to 40 song downloads per second |
-| Languages | Add templates; nothing else changes (the app reads the list from the server) | Lyrics in each language need a native speaker's check |
+| Part                    | How it grows                                                                            | What limits it today                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| API                     | Keeps no state, so more copies run side by side behind Caddy (which also balances load) | CPU: one copy on this VPS answers about 350 to 400 requests per second |
+| Song-making (stitching) | A separate song-making server, or more cores                                            | CPU: about 3 s per song on this VPS, 2.2 s on a laptop                 |
+| Singing                 | A bigger ElevenLabs plan (more songs at once) or our own GPUs                           | The plan: 2 at once, about 85 new names per minute                     |
+| Redis                   | One node is plenty here; managed Redis for failover                                     | Memory (tiny: the whole system used about 250 MB)                      |
+| Song files              | Cloud storage plus a CDN once there is more than one server                             | Bandwidth: 200 Mbit/s is about 35 to 40 song downloads per second      |
+| Languages               | Add templates; nothing else changes (the app reads the list from the server)            | Lyrics in each language need a native speaker's check                  |
 
 **Cost:**
 
-| Item | Cost |
-| --- | --- |
-| A new name in a template | About 165 credits, about $0.03 |
-| A name already sung | Nothing |
-| A new template | About 371 credits per attempt |
-| The server | €7.99 per month |
-| Current plan (Creator) | 131,000 credits a month: about 790 new names. A real launch needs a bigger plan before it needs bigger servers |
+| Item                     | Cost                                                                                                           |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| A new name in a template | About 165 credits, about $0.03                                                                                 |
+| A name already sung      | Nothing                                                                                                        |
+| A new template           | About 371 credits per attempt                                                                                  |
+| The server               | €7.99 per month                                                                                                |
+| Current plan (Creator)   | 131,000 credits a month: about 790 new names. A real launch needs a bigger plan before it needs bigger servers |
 
 ## Honest limits and what is not verified
 

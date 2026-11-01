@@ -18,10 +18,20 @@ const redis = createRedis("api");
 const catalog = await loadCatalog(env.TEMPLATES_DIR, env.CLIP_CONTEXT_MS);
 const queues = createQueues();
 const songRepo = new SongRepo(redis);
-const eta = new EtaEstimator(() => songRepo.pendingCount(catalog.ids()), redis, env.PROVIDER_CONCURRENCY, env.SECONDS_PER_SONG_ESTIMATE, env.MAX_NAMES_PER_CALL);
+const eta = new EtaEstimator(
+  () => songRepo.pendingCount(catalog.ids()),
+  redis,
+  env.PROVIDER_CONCURRENCY,
+  env.SECONDS_PER_SONG_ESTIMATE,
+  env.MAX_NAMES_PER_CALL,
+);
 const songs = new SongService(redis, catalog, songRepo, queues, eta);
 const stt: SpeechToText =
-  env.STT_PROVIDER === "elevenlabs" ? new ElevenLabsStt(env.ELEVENLABS_API_KEY!) : env.STT_PROVIDER === "sarvam" ? new SarvamStt(env.SARVAM_API_KEY!) : new MockStt();
+  env.STT_PROVIDER === "elevenlabs"
+    ? new ElevenLabsStt(env.ELEVENLABS_API_KEY!)
+    : env.STT_PROVIDER === "sarvam"
+      ? new SarvamStt(env.SARVAM_API_KEY!)
+      : new MockStt();
 
 const app = buildApp({ redis, catalog, queues, songs, stt });
 const server = app.listen(env.PORT, (err?: Error) => {
@@ -30,7 +40,15 @@ const server = app.listen(env.PORT, (err?: Error) => {
     logger.fatal({ err, port: env.PORT }, "api failed to start");
     process.exit(1);
   }
-  logger.info({ port: env.PORT, templates: catalog.size, languages: catalog.langs(), provider: env.SINGING_PROVIDER }, "api listening");
+  logger.info(
+    {
+      port: env.PORT,
+      templates: catalog.size,
+      languages: catalog.langs(),
+      provider: env.SINGING_PROVIDER,
+    },
+    "api listening",
+  );
 });
 // Longer than typical load balancer idle timeouts, avoids sporadic 502s.
 server.keepAliveTimeout = 65_000;

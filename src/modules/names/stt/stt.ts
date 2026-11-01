@@ -3,5 +3,10 @@
 // lang is optional: the app asks for the name before the song language, so the
 // provider may have to detect the spoken language itself.
 export interface SpeechToText {
-  transcribe(audio: Buffer, mime: string, lang?: string, hint?: string): Promise<string | null>;
+  transcribe(
+    audio: Buffer,
+    mime: string,
+    lang?: string,
+    hint?: string,
+  ): Promise<string | null>;
 }

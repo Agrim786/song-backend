@@ -41,9 +41,16 @@ export class EtaEstimator {
   }
 
   async estimate() {
-    const snap = this.snap && Date.now() - this.snap.at < CACHE_MS ? this.snap : await this.refresh();
+    const snap =
+      this.snap && Date.now() - this.snap.at < CACHE_MS
+        ? this.snap
+        : await this.refresh();
     const backlog = snap.backlog + this.queuedSinceSnap;
-    return { etaSeconds: Math.ceil((backlog * snap.secondsPerSong) / this.slots), backlog, secondsPerSong: snap.secondsPerSong };
+    return {
+      etaSeconds: Math.ceil((backlog * snap.secondsPerSong) / this.slots),
+      backlog,
+      secondsPerSong: snap.secondsPerSong,
+    };
   }
 
   // Whole-line wait: drives the picker's spike mode (is the system busy?).
@@ -62,7 +69,10 @@ export class EtaEstimator {
     // the first song is sung in a batch of 5 and is ready when that batch is.
     const batch = backlog > this.slots ? this.batchSize : 1;
     const round = Math.ceil(position / (this.slots * batch));
-    return Math.max(MIN_SONG_SECONDS, Math.ceil(round * batch * secondsPerSong * PROMISE_MARGIN));
+    return Math.max(
+      MIN_SONG_SECONDS,
+      Math.ceil(round * batch * secondsPerSong * PROMISE_MARGIN),
+    );
   }
 
   // One Redis read per expiry, shared by every request waiting on it.
@@ -70,7 +80,10 @@ export class EtaEstimator {
     this.refreshing ??= (async () => {
       try {
         const before = this.queuedSinceSnap;
-        const [waiting, ewma] = await Promise.all([this.backlog(), this.redis.get(keys.singSecondsEwma())]);
+        const [waiting, ewma] = await Promise.all([
+          this.backlog(),
+          this.redis.get(keys.singSecondsEwma()),
+        ]);
         // Songs noted before the read are inside `waiting` now. Ones noted during it
         // may be counted twice until the next read: a small overestimate is the
         // safe side (spike mode a moment early, never a spike missed).

@@ -34,40 +34,110 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       aliases: ["सनम", "sanam"],
       hook: "[Hook]\nओ {name}, दिल कहे तेरा नाम",
       verse: "[Verse]\nतेरी बातों में खो जाऊँ\nहर पल तुझको ही गाऊँ",
-      styles: ["romantic bollywood ballad", "soft piano", "strings", "acoustic guitar", "emotional", "slow tempo", "80 bpm", "male vocals"],
-      hookStyles: ["romantic hook", "warm male vocals", "hindi vocals", "soft piano"],
+      styles: [
+        "romantic bollywood ballad",
+        "soft piano",
+        "strings",
+        "acoustic guitar",
+        "emotional",
+        "slow tempo",
+        "80 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "romantic hook",
+        "warm male vocals",
+        "hindi vocals",
+        "soft piano",
+      ],
     },
     pop: {
       placeholder: "यारा",
       aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
       hook: "[Hook]\nहे {name}, तू है सबसे ख़ास",
       verse: "[Verse]\nचल आज ये रात हमारी है\nहर धड़कन में यारी है",
-      styles: ["upbeat hindi pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
-      hookStyles: ["catchy pop hook", "energetic female vocals", "hindi vocals", "synths"],
+      styles: [
+        "upbeat hindi pop",
+        "synths",
+        "punchy drums",
+        "bass",
+        "catchy",
+        "dance",
+        "118 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "catchy pop hook",
+        "energetic female vocals",
+        "hindi vocals",
+        "synths",
+      ],
     },
     bhangra: {
       placeholder: "यारा",
       aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
       hook: "[Hook]\nओ {name}, नच ले आज",
       verse: "[Verse]\nढोल बजे ते दिल झूमे\nसारी दुनिया संग घूमे",
-      styles: ["punjabi bhangra", "dhol", "tumbi", "high energy", "festive", "celebration", "125 bpm", "male vocals"],
-      hookStyles: ["bhangra hook", "powerful male vocals", "punjabi style vocals", "dhol"],
+      styles: [
+        "punjabi bhangra",
+        "dhol",
+        "tumbi",
+        "high energy",
+        "festive",
+        "celebration",
+        "125 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "bhangra hook",
+        "powerful male vocals",
+        "punjabi style vocals",
+        "dhol",
+      ],
     },
     sufi: {
       placeholder: "यारा",
       aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
       hook: "[Hook]\n{name}, तू ही मेरी इबादत",
       verse: "[Verse]\nरूह में तेरा नूर बसे\nहर साँस में तू ही हँसे",
-      styles: ["sufi", "harmonium", "tabla", "soulful", "spiritual", "qawwali influence", "90 bpm", "male vocals"],
-      hookStyles: ["soulful sufi hook", "deep male vocals", "hindi vocals", "harmonium"],
+      styles: [
+        "sufi",
+        "harmonium",
+        "tabla",
+        "soulful",
+        "spiritual",
+        "qawwali influence",
+        "90 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "soulful sufi hook",
+        "deep male vocals",
+        "hindi vocals",
+        "harmonium",
+      ],
     },
     lofi: {
       placeholder: "दोस्त",
       aliases: ["दोस्त", "dost", "dosth"],
       hook: "[Hook]\n{name}, बस तू ही तू",
       verse: "[Verse]\nधीमी सी ये शाम है\nलबों पे तेरा नाम है",
-      styles: ["hindi lofi", "chill", "mellow keys", "vinyl crackle", "soft beats", "relaxed", "75 bpm", "female vocals"],
-      hookStyles: ["dreamy hook", "soft female vocals", "hindi vocals", "mellow keys"],
+      styles: [
+        "hindi lofi",
+        "chill",
+        "mellow keys",
+        "vinyl crackle",
+        "soft beats",
+        "relaxed",
+        "75 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "dreamy hook",
+        "soft female vocals",
+        "hindi vocals",
+        "mellow keys",
+      ],
     },
   },
   mr: {
@@ -76,24 +146,66 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       aliases: ["सजणा", "सजना", "sajana", "sajna"],
       hook: "[Hook]\nअरे {name}, तूच माझं गाणं",
       verse: "[Verse]\nतुझ्या हसण्यात हरवलो मी\nप्रत्येक क्षणी तुलाच शोधतो मी",
-      styles: ["romantic marathi song", "soft piano", "strings", "acoustic guitar", "emotional", "slow tempo", "80 bpm", "male vocals"],
-      hookStyles: ["romantic hook", "warm male vocals", "marathi vocals", "soft piano"],
+      styles: [
+        "romantic marathi song",
+        "soft piano",
+        "strings",
+        "acoustic guitar",
+        "emotional",
+        "slow tempo",
+        "80 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "romantic hook",
+        "warm male vocals",
+        "marathi vocals",
+        "soft piano",
+      ],
     },
     lavani: {
       placeholder: "राया",
       aliases: ["राया", "raya", "raaya"],
       hook: "[Hook]\nअहो {name}, या ना जवळ",
       verse: "[Verse]\nढोलकीच्या तालावर नाचू या\nआज रात्री गाणं गाऊ या",
-      styles: ["marathi lavani", "dholki", "tuntuni", "folk", "energetic", "festive", "120 bpm", "female vocals"],
-      hookStyles: ["lavani hook", "bold female vocals", "marathi vocals", "dholki"],
+      styles: [
+        "marathi lavani",
+        "dholki",
+        "tuntuni",
+        "folk",
+        "energetic",
+        "festive",
+        "120 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "lavani hook",
+        "bold female vocals",
+        "marathi vocals",
+        "dholki",
+      ],
     },
     pop: {
       placeholder: "मित्रा",
       aliases: ["मित्रा", "mitra"],
       hook: "[Hook]\nहे {name}, तू आहेस खास",
       verse: "[Verse]\nचल आज ही रात आपली आहे\nप्रत्येक क्षण नवा आहे",
-      styles: ["upbeat marathi pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
-      hookStyles: ["catchy pop hook", "energetic female vocals", "marathi vocals", "synths"],
+      styles: [
+        "upbeat marathi pop",
+        "synths",
+        "punchy drums",
+        "bass",
+        "catchy",
+        "dance",
+        "118 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "catchy pop hook",
+        "energetic female vocals",
+        "marathi vocals",
+        "synths",
+      ],
     },
   },
   gu: {
@@ -102,24 +214,65 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       aliases: ["સાજન", "sajan", "saajan"],
       hook: "[Hook]\nઓ {name}, તું છે ખાસ",
       verse: "[Verse]\nઢોલ વાગે ને મન નાચે\nઆજે રાત આપણી સાથે",
-      styles: ["gujarati garba", "dhol", "dandiya beats", "festive", "upbeat", "120 bpm", "female vocals"],
-      hookStyles: ["catchy garba hook", "energetic female vocals", "gujarati vocals", "dhol"],
+      styles: [
+        "gujarati garba",
+        "dhol",
+        "dandiya beats",
+        "festive",
+        "upbeat",
+        "120 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "catchy garba hook",
+        "energetic female vocals",
+        "gujarati vocals",
+        "dhol",
+      ],
     },
     folk: {
       placeholder: "વ્હાલા",
       aliases: ["વ્હાલા", "vhala", "vahala"],
       hook: "[Hook]\nઓ {name}, તું મારું ગીત",
       verse: "[Verse]\nતારી યાદમાં રાત વીતે\nદિલ મારું તારા માટે ધબકે",
-      styles: ["gujarati folk", "romantic", "acoustic guitar", "flute", "soft dholak", "slow tempo", "85 bpm", "male vocals"],
-      hookStyles: ["romantic folk hook", "warm male vocals", "gujarati vocals", "flute"],
+      styles: [
+        "gujarati folk",
+        "romantic",
+        "acoustic guitar",
+        "flute",
+        "soft dholak",
+        "slow tempo",
+        "85 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "romantic folk hook",
+        "warm male vocals",
+        "gujarati vocals",
+        "flute",
+      ],
     },
     pop: {
       placeholder: "દોસ્ત",
       aliases: ["દોસ્ત", "dost"],
       hook: "[Hook]\nહે {name}, તું છે સૌથી ખાસ",
       verse: "[Verse]\nચાલ આજે રાત આપણી છે\nદરેક ધડકન નવી છે",
-      styles: ["upbeat gujarati pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
-      hookStyles: ["catchy pop hook", "energetic female vocals", "gujarati vocals", "synths"],
+      styles: [
+        "upbeat gujarati pop",
+        "synths",
+        "punchy drums",
+        "bass",
+        "catchy",
+        "dance",
+        "118 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "catchy pop hook",
+        "energetic female vocals",
+        "gujarati vocals",
+        "synths",
+      ],
     },
   },
   pa: {
@@ -128,24 +281,66 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       aliases: ["ਸੱਜਣਾ", "ਸਜਣਾ", "sajjna", "sajna"],
       hook: "[Hook]\nਓ {name}, ਨੱਚ ਲੈ ਅੱਜ",
       verse: "[Verse]\nਢੋਲ ਵੱਜੇ ਤੇ ਦਿਲ ਝੂਮੇ\nਸਾਰੀ ਦੁਨੀਆ ਨਾਲ ਘੁੰਮੇ",
-      styles: ["punjabi bhangra", "dhol", "tumbi", "high energy", "festive", "celebration", "125 bpm", "male vocals"],
-      hookStyles: ["bhangra hook", "powerful male vocals", "punjabi vocals", "dhol"],
+      styles: [
+        "punjabi bhangra",
+        "dhol",
+        "tumbi",
+        "high energy",
+        "festive",
+        "celebration",
+        "125 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "bhangra hook",
+        "powerful male vocals",
+        "punjabi vocals",
+        "dhol",
+      ],
     },
     romantic: {
       placeholder: "ਮਾਹੀਆ",
       aliases: ["ਮਾਹੀਆ", "ਮਾਹੀਏ", "mahiya", "maahiya"],
       hook: "[Hook]\nਓ {name}, ਤੂੰ ਮੇਰਾ ਗੀਤ",
       verse: "[Verse]\nਤੇਰੀ ਯਾਦ ਵਿੱਚ ਰਾਤਾਂ ਲੰਘਣ\nਦਿਲ ਮੇਰਾ ਤੇਰੇ ਲਈ ਧੜਕੇ",
-      styles: ["punjabi romantic ballad", "acoustic guitar", "strings", "soft", "emotional", "slow tempo", "80 bpm", "male vocals"],
-      hookStyles: ["romantic hook", "warm male vocals", "punjabi vocals", "acoustic guitar"],
+      styles: [
+        "punjabi romantic ballad",
+        "acoustic guitar",
+        "strings",
+        "soft",
+        "emotional",
+        "slow tempo",
+        "80 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "romantic hook",
+        "warm male vocals",
+        "punjabi vocals",
+        "acoustic guitar",
+      ],
     },
     sufi: {
       placeholder: "ਯਾਰਾ",
       aliases: ["ਯਾਰਾ", "yaara", "yara"],
       hook: "[Hook]\n{name}, ਤੂੰ ਹੀ ਮੇਰੀ ਇਬਾਦਤ",
       verse: "[Verse]\nਰੂਹ ਵਿੱਚ ਤੇਰਾ ਨੂਰ ਵਸੇ\nਹਰ ਸਾਹ ਵਿੱਚ ਤੂੰ ਹੀ ਹੱਸੇ",
-      styles: ["punjabi sufi", "harmonium", "tabla", "soulful", "spiritual", "qawwali influence", "90 bpm", "male vocals"],
-      hookStyles: ["soulful sufi hook", "deep male vocals", "punjabi vocals", "harmonium"],
+      styles: [
+        "punjabi sufi",
+        "harmonium",
+        "tabla",
+        "soulful",
+        "spiritual",
+        "qawwali influence",
+        "90 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "soulful sufi hook",
+        "deep male vocals",
+        "punjabi vocals",
+        "harmonium",
+      ],
     },
   },
   bn: {
@@ -154,24 +349,65 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       aliases: ["বন্ধু", "bondhu", "bandhu"],
       hook: "[Hook]\nও {name}, তুমি আমার গান",
       verse: "[Verse]\nতোমার হাসিতে আলো জ্বলে\nমন আমার তোমায় বলে",
-      styles: ["bengali romantic song", "acoustic guitar", "flute", "soft", "melodic", "85 bpm", "male vocals"],
-      hookStyles: ["romantic hook", "warm male vocals", "bengali vocals", "acoustic guitar"],
+      styles: [
+        "bengali romantic song",
+        "acoustic guitar",
+        "flute",
+        "soft",
+        "melodic",
+        "85 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "romantic hook",
+        "warm male vocals",
+        "bengali vocals",
+        "acoustic guitar",
+      ],
     },
     baul: {
       placeholder: "মাঝি",
       aliases: ["মাঝি", "majhi", "maajhi"],
       hook: "[Hook]\nও {name}, তুমি মনের মানুষ",
       verse: "[Verse]\nনদীর ধারে একতারা বাজে\nমন আমার পথে পথে সাজে",
-      styles: ["bengali baul folk", "ektara", "dotara", "khamak", "rustic", "soulful", "95 bpm", "male vocals"],
-      hookStyles: ["baul hook", "earthy male vocals", "bengali vocals", "ektara"],
+      styles: [
+        "bengali baul folk",
+        "ektara",
+        "dotara",
+        "khamak",
+        "rustic",
+        "soulful",
+        "95 bpm",
+        "male vocals",
+      ],
+      hookStyles: [
+        "baul hook",
+        "earthy male vocals",
+        "bengali vocals",
+        "ektara",
+      ],
     },
     pop: {
       placeholder: "সোনা",
       aliases: ["সোনা", "sona", "shona"],
       hook: "[Hook]\nহে {name}, তুমি সবার সেরা",
       verse: "[Verse]\nচলো আজ রাতটা আমাদের\nপ্রতিটা মুহূর্ত নতুন ভোরের",
-      styles: ["upbeat bengali pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
-      hookStyles: ["catchy pop hook", "energetic female vocals", "bengali vocals", "synths"],
+      styles: [
+        "upbeat bengali pop",
+        "synths",
+        "punchy drums",
+        "bass",
+        "catchy",
+        "dance",
+        "118 bpm",
+        "female vocals",
+      ],
+      hookStyles: [
+        "catchy pop hook",
+        "energetic female vocals",
+        "bengali vocals",
+        "synths",
+      ],
     },
   },
 };
@@ -194,20 +430,29 @@ const { values } = parseArgs({
 const byLang = PRESETS[values.lang!];
 const found = byLang && values.genre ? byLang[values.genre] : undefined;
 if (!found) {
-  const options = Object.entries(PRESETS).map(([l, g]) => `--lang ${l} --genre ${Object.keys(g).join("|")}`).join("\n  ");
-  console.error(`usage (one of):\n  ${options}\n  [--id hi-love-01] [--spike] [--dry-run]`);
+  const options = Object.entries(PRESETS)
+    .map(([l, g]) => `--lang ${l} --genre ${Object.keys(g).join("|")}`)
+    .join("\n  ");
+  console.error(
+    `usage (one of):\n  ${options}\n  [--id hi-love-01] [--spike] [--dry-run]`,
+  );
   process.exit(1);
 }
 const preset: Preset = found;
 
 // The preset's own voice, from its style tags; --voice swaps every vocal tag.
-const presetVoice = [...preset.styles, ...preset.hookStyles].some((t) => /\bfemale\b/.test(t)) ? "female" : "male";
+const presetVoice = [...preset.styles, ...preset.hookStyles].some((t) =>
+  /\bfemale\b/.test(t),
+)
+  ? "female"
+  : "male";
 const voice = values.voice ?? presetVoice;
 if (voice !== "male" && voice !== "female") {
   console.error("--voice must be male or female");
   process.exit(1);
 }
-const withVoice = (tags: string[]) => tags.map((t) => t.replace(/\b(?:fe)?male\b/g, voice));
+const withVoice = (tags: string[]) =>
+  tags.map((t) => t.replace(/\b(?:fe)?male\b/g, voice));
 preset.styles = withVoice(preset.styles);
 preset.hookStyles = withVoice(preset.hookStyles);
 
@@ -215,11 +460,52 @@ preset.hookStyles = withVoice(preset.hookStyles);
 const id = values.id ?? `${values.lang}-${values.genre}-${voice[0]}-01`;
 // 6 s intro | 4 s hook | 8 s verse | 4 s hook | 5 s outro = 27 s. Hooks at 6-10 s and 18-22 s.
 const sections = [
-  { ms: 6000, hook: false, text: "[Intro]\n{instrumental}", styles: [...preset.styles.filter((s) => !s.includes("vocals")), "instrumental intro"], neg: ["vocals", "singing", "spoken words"] },
-  { ms: 4000, hook: true, text: preset.hook, styles: preset.hookStyles, neg: ["whisper", "spoken word"] },
-  { ms: 8000, hook: false, text: preset.verse, styles: preset.styles, neg: ["ad-libs", "background chants", "call and response", "repeating the hook"] },
-  { ms: 4000, hook: true, text: preset.hook, styles: preset.hookStyles, neg: ["whisper", "spoken word"] },
-  { ms: 5000, hook: false, text: "[Outro]\n{instrumental}", styles: [...preset.styles.filter((s) => !s.includes("vocals")), "instrumental"], neg: ["vocals", "singing", "spoken words"] },
+  {
+    ms: 6000,
+    hook: false,
+    text: "[Intro]\n{instrumental}",
+    styles: [
+      ...preset.styles.filter((s) => !s.includes("vocals")),
+      "instrumental intro",
+    ],
+    neg: ["vocals", "singing", "spoken words"],
+  },
+  {
+    ms: 4000,
+    hook: true,
+    text: preset.hook,
+    styles: preset.hookStyles,
+    neg: ["whisper", "spoken word"],
+  },
+  {
+    ms: 8000,
+    hook: false,
+    text: preset.verse,
+    styles: preset.styles,
+    neg: [
+      "ad-libs",
+      "background chants",
+      "call and response",
+      "repeating the hook",
+    ],
+  },
+  {
+    ms: 4000,
+    hook: true,
+    text: preset.hook,
+    styles: preset.hookStyles,
+    neg: ["whisper", "spoken word"],
+  },
+  {
+    ms: 5000,
+    hook: false,
+    text: "[Outro]\n{instrumental}",
+    styles: [
+      ...preset.styles.filter((s) => !s.includes("vocals")),
+      "instrumental",
+    ],
+    neg: ["vocals", "singing", "spoken words"],
+  },
 ];
 
 const plan = {
@@ -233,9 +519,22 @@ const plan = {
 };
 
 let cursor = 0;
-const slots: { startMs: number; endMs: number; text: string; styles: string[]; negativeStyles: string[] }[] = [];
+const slots: {
+  startMs: number;
+  endMs: number;
+  text: string;
+  styles: string[];
+  negativeStyles: string[];
+}[] = [];
 for (const s of sections) {
-  if (s.hook) slots.push({ startMs: cursor, endMs: cursor + s.ms, text: s.text, styles: s.styles, negativeStyles: s.neg });
+  if (s.hook)
+    slots.push({
+      startMs: cursor,
+      endMs: cursor + s.ms,
+      text: s.text,
+      styles: s.styles,
+      negativeStyles: s.neg,
+    });
   cursor += s.ms;
 }
 
@@ -251,28 +550,51 @@ if (!key) {
 }
 
 const TOLERANCE_S = 0.3;
-const norm = (t: string) => t.normalize("NFC").toLowerCase().replace(/[^\p{L}\p{M}]/gu, "");
+const norm = (t: string) =>
+  t
+    .normalize("NFC")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{M}]/gu, "");
 const aliases = preset.aliases.map(norm);
 
-async function generate(seed: number): Promise<{ audio: Buffer; songId: string }> {
+async function generate(
+  seed: number,
+): Promise<{ audio: Buffer; songId: string }> {
   const res = await fetch("https://api.elevenlabs.io/v1/music", {
     method: "POST",
     headers: { "xi-api-key": key!, "content-type": "application/json" },
-    body: JSON.stringify({ composition_plan: plan, model_id: values.model, store_for_inpainting: true, seed }),
+    body: JSON.stringify({
+      composition_plan: plan,
+      model_id: values.model,
+      store_for_inpainting: true,
+      seed,
+    }),
     signal: AbortSignal.timeout(180_000),
   });
-  if (!res.ok) throw new Error(`music HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok)
+    throw new Error(
+      `music HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`,
+    );
   const songId = res.headers.get("song-id");
   if (!songId) throw new Error("no song-id header (not stored for inpainting)");
   return { audio: Buffer.from(await res.arrayBuffer()), songId };
 }
 
-interface Word { text: string; start: number; end: number; type: string }
+interface Word {
+  text: string;
+  start: number;
+  end: number;
+  type: string;
+}
 
 // Transcribe the template with word timestamps, biased toward the placeholder.
 async function transcribe(audio: Buffer): Promise<Word[]> {
   const form = new FormData();
-  form.append("file", new Blob([new Uint8Array(audio)], { type: "audio/mpeg" }), "template.mp3");
+  form.append(
+    "file",
+    new Blob([new Uint8Array(audio)], { type: "audio/mpeg" }),
+    "template.mp3",
+  );
   form.append("model_id", "scribe_v2");
   form.append("timestamps_granularity", "word");
   form.append("language_code", values.lang!);
@@ -283,7 +605,10 @@ async function transcribe(audio: Buffer): Promise<Word[]> {
     body: form,
     signal: AbortSignal.timeout(120_000),
   });
-  if (!res.ok) throw new Error(`speech-to-text HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  if (!res.ok)
+    throw new Error(
+      `speech-to-text HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`,
+    );
   return ((await res.json()) as { words?: Word[] }).words ?? [];
 }
 
@@ -291,18 +616,43 @@ async function transcribe(audio: Buffer): Promise<Word[]> {
 // Kept sections are copied into every user's song, so the placeholder may only be
 // heard inside the name slots, and must be heard in each of them.
 function check(words: Word[]) {
-  const hits = words.filter((w) => w.type === "word" && aliases.includes(norm(w.text)));
-  const inSlot = (w: Word) => slots.findIndex((s) => w.start >= s.startMs / 1000 - TOLERANCE_S && w.end <= s.endMs / 1000 + TOLERANCE_S);
-  const leaks = hits.filter((w) => inSlot(w) === -1).map((w) => `${w.text}@${w.start.toFixed(1)}s`);
-  const missing = slots.filter((_, i) => !hits.some((w) => inSlot(w) === i)).map((s) => `${s.startMs / 1000}-${s.endMs / 1000}s`);
-  return { leaks, missing, heard: words.filter((w) => w.type === "word").map((w) => w.text).join(" ") };
+  const hits = words.filter(
+    (w) => w.type === "word" && aliases.includes(norm(w.text)),
+  );
+  const inSlot = (w: Word) =>
+    slots.findIndex(
+      (s) =>
+        w.start >= s.startMs / 1000 - TOLERANCE_S &&
+        w.end <= s.endMs / 1000 + TOLERANCE_S,
+    );
+  const leaks = hits
+    .filter((w) => inSlot(w) === -1)
+    .map((w) => `${w.text}@${w.start.toFixed(1)}s`);
+  const missing = slots
+    .filter((_, i) => !hits.some((w) => inSlot(w) === i))
+    .map((s) => `${s.startMs / 1000}-${s.endMs / 1000}s`);
+  return {
+    leaks,
+    missing,
+    heard: words
+      .filter((w) => w.type === "word")
+      .map((w) => w.text)
+      .join(" "),
+  };
 }
 
 const maxAttempts = Number(values["max-attempts"]);
-let accepted: { audio: Buffer; songId: string; seed: number; report: ReturnType<typeof check> | null } | null = null;
+let accepted: {
+  audio: Buffer;
+  songId: string;
+  seed: number;
+  report: ReturnType<typeof check> | null;
+} | null = null;
 for (let attempt = 1; attempt <= maxAttempts && !accepted; attempt++) {
   const seed = Math.floor(Math.random() * 2_000_000_000);
-  process.stdout.write(`attempt ${attempt}/${maxAttempts}: generating ${id} (seed ${seed}) ... `);
+  process.stdout.write(
+    `attempt ${attempt}/${maxAttempts}: generating ${id} (seed ${seed}) ... `,
+  );
   const { audio, songId } = await generate(seed);
   if (values["skip-check"]) {
     accepted = { audio, songId, seed, report: null };
@@ -314,12 +664,16 @@ for (let attempt = 1; attempt <= maxAttempts && !accepted; attempt++) {
     accepted = { audio, songId, seed, report };
     console.log("clean");
   } else {
-    console.log(`rejected (leaks: ${report.leaks.join(", ") || "none"}; missing in slots: ${report.missing.join(", ") || "none"})`);
+    console.log(
+      `rejected (leaks: ${report.leaks.join(", ") || "none"}; missing in slots: ${report.missing.join(", ") || "none"})`,
+    );
     console.log(`  heard: ${report.heard.slice(0, 200)}`);
   }
 }
 if (!accepted) {
-  console.error(`no clean take after ${maxAttempts} attempts. Try again, or change the preset (verse lyrics / placeholder).`);
+  console.error(
+    `no clean take after ${maxAttempts} attempts. Try again, or change the preset (verse lyrics / placeholder).`,
+  );
   process.exit(1);
 }
 
@@ -338,7 +692,13 @@ const entry = {
   durationMs: cursor,
   slots,
 };
-await writeFile(join(values.out, `${id}.json`), JSON.stringify(entry, null, 2) + "\n");
+await writeFile(
+  join(values.out, `${id}.json`),
+  JSON.stringify(entry, null, 2) + "\n",
+);
 console.log(`saved ${values.out}/${id}.json + ${audioFile}`);
-if (accepted.report) console.log(`heard: ${accepted.report.heard.slice(0, 200)}`);
-console.log(`still listen once: open ${values.out}/${audioFile}  ("${preset.placeholder}" only at 6-10s and 18-22s)`);
+if (accepted.report)
+  console.log(`heard: ${accepted.report.heard.slice(0, 200)}`);
+console.log(
+  `still listen once: open ${values.out}/${audioFile}  ("${preset.placeholder}" only at 6-10s and 18-22s)`,
+);

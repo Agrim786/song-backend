@@ -33,7 +33,8 @@ export type Slot = Template["slots"][number];
 
 // How the pool remembers "this name is ready in this template". Includes the
 // version so a re-recorded template never counts songs made from the old audio.
-export const templateRef = (t: Pick<Template, "id" | "version">) => `${t.id}:v${t.version}`;
+export const templateRef = (t: Pick<Template, "id" | "version">) =>
+  `${t.id}:v${t.version}`;
 
 // Provider rule (ElevenLabs inpainting): generated chunks are 3-120 s.
 const MIN_SLOT_MS = 3000;
@@ -41,9 +42,12 @@ const MIN_SLOT_MS = 3000;
 function validateLayout(t: Template, ctxMs: number): string | null {
   let prevEnd = -Infinity;
   for (const s of t.slots) {
-    if (s.endMs - s.startMs < MIN_SLOT_MS) return `slot ${s.startMs} is shorter than ${MIN_SLOT_MS}ms`;
-    if (s.startMs - ctxMs < 0 || s.endMs + ctxMs > t.durationMs) return `slot ${s.startMs} has no room for ${ctxMs}ms context`;
-    if (s.startMs - ctxMs < prevEnd) return `slot ${s.startMs} context overlaps the previous slot`;
+    if (s.endMs - s.startMs < MIN_SLOT_MS)
+      return `slot ${s.startMs} is shorter than ${MIN_SLOT_MS}ms`;
+    if (s.startMs - ctxMs < 0 || s.endMs + ctxMs > t.durationMs)
+      return `slot ${s.startMs} has no room for ${ctxMs}ms context`;
+    if (s.startMs - ctxMs < prevEnd)
+      return `slot ${s.startMs} context overlaps the previous slot`;
     prevEnd = s.endMs + ctxMs;
   }
   return null;
@@ -98,7 +102,9 @@ export class Catalog {
   }
 
   forLang(lang: string, genre?: string): Template[] {
-    return [...this.byId.values()].filter((t) => t.lang === lang && (!genre || t.genre === genre));
+    return [...this.byId.values()].filter(
+      (t) => t.lang === lang && (!genre || t.genre === genre),
+    );
   }
 
   byProviderSongId(id: string): Template | undefined {
@@ -110,12 +116,20 @@ export class Catalog {
   }
 }
 
-export async function loadCatalog(dir: string, ctxMs: number): Promise<Catalog> {
+export async function loadCatalog(
+  dir: string,
+  ctxMs: number,
+): Promise<Catalog> {
   const files = (await readdir(dir)).filter((f) => f.endsWith(".json"));
   const templates: Template[] = [];
   for (const f of files) {
-    const parsed = templateSchema.safeParse(JSON.parse(await readFile(join(dir, f), "utf8")));
-    if (!parsed.success) throw new Error(`template ${f}: ${parsed.error.issues.map((i) => i.message).join("; ")}`);
+    const parsed = templateSchema.safeParse(
+      JSON.parse(await readFile(join(dir, f), "utf8")),
+    );
+    if (!parsed.success)
+      throw new Error(
+        `template ${f}: ${parsed.error.issues.map((i) => i.message).join("; ")}`,
+      );
     const t = parsed.data;
     t.slots.sort((a, b) => a.startMs - b.startMs);
     const layoutError = validateLayout(t, ctxMs);
@@ -123,6 +137,7 @@ export async function loadCatalog(dir: string, ctxMs: number): Promise<Catalog> 
     await stat(join(dir, t.audioFile)); // throws if the audio is missing
     templates.push(t);
   }
-  if (!templates.length) throw new Error(`no templates in ${dir}. Run: npm run import-template`);
+  if (!templates.length)
+    throw new Error(`no templates in ${dir}. Run: npm run import-template`);
   return new Catalog(dir, templates);
 }

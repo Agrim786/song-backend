@@ -18,6 +18,13 @@ export function normalizeName(raw: string): NormalizedName | null {
     .trim();
   if (!cleaned || [...cleaned].length > MAX_LEN) return null;
   const isLatin = /^[\p{Script=Latin}\s'-]+$/u.test(cleaned);
-  const lyric = isLatin ? cleaned.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_m, sep: string, ch: string) => sep + ch.toUpperCase()) : cleaned;
+  const lyric = isLatin
+    ? cleaned
+        .toLowerCase()
+        .replace(
+          /(^|[\s-])(\p{L})/gu,
+          (_m, sep: string, ch: string) => sep + ch.toUpperCase(),
+        )
+    : cleaned;
   return { lyric, key: lyric.toLowerCase() };
 }

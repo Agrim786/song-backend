@@ -14,7 +14,8 @@ export class LocalStorage implements FileStorage {
 
   private path(key: string) {
     const p = resolve(join(this.root, key));
-    if (!p.startsWith(this.root + sep)) throw new Error(`bad storage key ${key}`);
+    if (!p.startsWith(this.root + sep))
+      throw new Error(`bad storage key ${key}`);
     return p;
   }
 

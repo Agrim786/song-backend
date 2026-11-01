@@ -15,7 +15,9 @@ const { values } = parseArgs({
   },
 });
 if (!values.from || !values.id) {
-  console.error("usage: npm run import-template -- --from <lab dir> --id <template-id> [--genre birthday] [--spike]");
+  console.error(
+    "usage: npm run import-template -- --from <lab dir> --id <template-id> [--genre birthday] [--spike]",
+  );
   process.exit(1);
 }
 
@@ -36,7 +38,9 @@ interface LabTemplate {
   sections: LabSection[];
 }
 
-const lab = JSON.parse(await readFile(join(values.from, "template.json"), "utf8")) as LabTemplate;
+const lab = JSON.parse(
+  await readFile(join(values.from, "template.json"), "utf8"),
+) as LabTemplate;
 const audioFile = `${values.id}.mp3`;
 const entry = {
   id: values.id,
@@ -50,8 +54,19 @@ const entry = {
   durationMs: lab.total_ms,
   slots: lab.sections
     .filter((s) => s.hook)
-    .map((s) => ({ startMs: s.start, endMs: s.end, text: lab.hook_text, styles: s.styles, negativeStyles: s.neg ?? [] })),
+    .map((s) => ({
+      startMs: s.start,
+      endMs: s.end,
+      text: lab.hook_text,
+      styles: s.styles,
+      negativeStyles: s.neg ?? [],
+    })),
 };
 await copyFile(join(values.from, lab.audio_file), join(values.out, audioFile));
-await writeFile(join(values.out, `${values.id}.json`), JSON.stringify(entry, null, 2) + "\n");
-console.log(`imported ${values.id}: ${entry.slots.length} slots, ${entry.durationMs} ms -> ${values.out}`);
+await writeFile(
+  join(values.out, `${values.id}.json`),
+  JSON.stringify(entry, null, 2) + "\n",
+);
+console.log(
+  `imported ${values.id}: ${entry.slots.length} slots, ${entry.durationMs} ms -> ${values.out}`,
+);

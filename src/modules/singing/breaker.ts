@@ -1,4 +1,7 @@
-import { ProviderRateLimitedError, ProviderUnavailableError } from "../../shared/errors.js";
+import {
+  ProviderRateLimitedError,
+  ProviderUnavailableError,
+} from "../../shared/errors.js";
 
 // After repeated real failures (not 429s) stop calling the provider for a while,
 // so an outage doesn't burn every job's retry attempts in seconds.
@@ -16,13 +19,20 @@ export class CircuitBreaker {
   }
 
   async run<T>(fn: () => Promise<T>): Promise<T> {
-    if (this.isOpen) throw new ProviderUnavailableError(this.openUntil - Date.now(), "circuit open");
+    if (this.isOpen)
+      throw new ProviderUnavailableError(
+        this.openUntil - Date.now(),
+        "circuit open",
+      );
     try {
       const result = await fn();
       this.failures = 0;
       return result;
     } catch (e) {
-      if (!(e instanceof ProviderRateLimitedError) && ++this.failures >= this.threshold) {
+      if (
+        !(e instanceof ProviderRateLimitedError) &&
+        ++this.failures >= this.threshold
+      ) {
         this.openUntil = Date.now() + this.cooldownMs;
         this.failures = 0;
       }

@@ -36,13 +36,22 @@ export const options = {
 };
 
 // Skewed like real names: a few are very common, most are rare.
-const pickName = () => names[Math.floor(Math.pow(Math.random(), 3) * names.length)];
+const pickName = () =>
+  names[Math.floor(Math.pow(Math.random(), 3) * names.length)];
 
 export default function () {
-  const res = http.post(`${BASE}/v1/songs`, JSON.stringify({ name: pickName(), lang: "hi" }), {
-    headers: { "Content-Type": "application/json", "Idempotency-Key": `${__VU}-${__ITER}`, "X-Loadtest-Token": TOKEN },
-    tags: { endpoint: "create" },
-  });
+  const res = http.post(
+    `${BASE}/v1/songs`,
+    JSON.stringify({ name: pickName(), lang: "hi" }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Idempotency-Key": `${__VU}-${__ITER}`,
+        "X-Loadtest-Token": TOKEN,
+      },
+      tags: { endpoint: "create" },
+    },
+  );
   check(res, { accepted: (r) => r.status === 200 || r.status === 202 });
   if (res.status === 200) instant.add(1);
   else if (res.status === 202) queued.add(1);

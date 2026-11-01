@@ -4,7 +4,9 @@ import { z } from "zod";
 // instead of misbehaving under load.
 const schema = z
   .object({
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    NODE_ENV: z
+      .enum(["development", "production", "test"])
+      .default("development"),
     PORT: z.coerce.number().int().positive().default(8080),
     PUBLIC_BASE_URL: z.string().default("http://localhost:8080"),
     REDIS_URL: z.string().default("redis://127.0.0.1:6379"),
@@ -27,7 +29,11 @@ const schema = z
     MAX_NAMES_PER_CALL: z.coerce.number().int().min(1).max(10).default(5),
 
     MOCK_LATENCY_MS: z.coerce.number().int().min(0).default(3300),
-    MOCK_LATENCY_PER_EXTRA_SECTION_MS: z.coerce.number().int().min(0).default(475),
+    MOCK_LATENCY_PER_EXTRA_SECTION_MS: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .default(475),
     MOCK_CONCURRENCY: z.coerce.number().int().min(1).default(2),
     MOCK_FAIL_RATE: z.coerce.number().min(0).max(1).default(0),
 
@@ -59,20 +65,43 @@ const schema = z
     const need = (cond: boolean, key: string, why: string) => {
       if (cond) ctx.addIssue({ code: "custom", path: [key], message: why });
     };
-    need(e.SINGING_PROVIDER === "elevenlabs" && !e.ELEVENLABS_API_KEY, "ELEVENLABS_API_KEY", "required when SINGING_PROVIDER=elevenlabs");
-    need(e.STT_PROVIDER === "sarvam" && !e.SARVAM_API_KEY, "SARVAM_API_KEY", "required when STT_PROVIDER=sarvam");
-    need(e.STT_PROVIDER === "elevenlabs" && !e.ELEVENLABS_API_KEY, "ELEVENLABS_API_KEY", "required when STT_PROVIDER=elevenlabs");
-    need(e.STORAGE_DRIVER === "s3" && !(e.S3_BUCKET && e.S3_PUBLIC_BASE_URL), "S3_BUCKET", "S3_BUCKET and S3_PUBLIC_BASE_URL required when STORAGE_DRIVER=s3");
+    need(
+      e.SINGING_PROVIDER === "elevenlabs" && !e.ELEVENLABS_API_KEY,
+      "ELEVENLABS_API_KEY",
+      "required when SINGING_PROVIDER=elevenlabs",
+    );
+    need(
+      e.STT_PROVIDER === "sarvam" && !e.SARVAM_API_KEY,
+      "SARVAM_API_KEY",
+      "required when STT_PROVIDER=sarvam",
+    );
+    need(
+      e.STT_PROVIDER === "elevenlabs" && !e.ELEVENLABS_API_KEY,
+      "ELEVENLABS_API_KEY",
+      "required when STT_PROVIDER=elevenlabs",
+    );
+    need(
+      e.STORAGE_DRIVER === "s3" && !(e.S3_BUCKET && e.S3_PUBLIC_BASE_URL),
+      "S3_BUCKET",
+      "S3_BUCKET and S3_PUBLIC_BASE_URL required when STORAGE_DRIVER=s3",
+    );
   });
 
 export type Env = z.infer<typeof schema>;
 
 function load(): Env {
   // Treat empty strings in .env as "not set" so optional keys stay optional.
-  const raw = Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== ""));
+  const raw = Object.fromEntries(
+    Object.entries(process.env).filter(([, v]) => v !== ""),
+  );
   const parsed = schema.safeParse(raw);
   if (!parsed.success) {
-    console.error("Invalid configuration:\n" + parsed.error.issues.map((i) => `  ${i.path.join(".")}: ${i.message}`).join("\n"));
+    console.error(
+      "Invalid configuration:\n" +
+        parsed.error.issues
+          .map((i) => `  ${i.path.join(".")}: ${i.message}`)
+          .join("\n"),
+    );
     process.exit(1);
   }
   return parsed.data;

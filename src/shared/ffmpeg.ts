@@ -4,7 +4,9 @@ import { spawn } from "node:child_process";
 // pinning a worker slot forever.
 export function ffmpeg(args: string[], timeoutMs = 60_000): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const proc = spawn("ffmpeg", ["-hide_banner", "-v", "error", ...args], { stdio: ["ignore", "pipe", "pipe"] });
+    const proc = spawn("ffmpeg", ["-hide_banner", "-v", "error", ...args], {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
     const out: Buffer[] = [];
     let err = "";
     const timer = setTimeout(() => proc.kill("SIGKILL"), timeoutMs);
@@ -26,11 +28,25 @@ export function ffmpeg(args: string[], timeoutMs = 60_000): Promise<Buffer> {
 // clip we planned: every splice offset depends on it.
 export async function probeDurationMs(path: string): Promise<number> {
   const out = await new Promise<string>((resolve, reject) => {
-    const proc = spawn("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path], { stdio: ["ignore", "pipe", "pipe"] });
+    const proc = spawn(
+      "ffprobe",
+      [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "csv=p=0",
+        path,
+      ],
+      { stdio: ["ignore", "pipe", "pipe"] },
+    );
     let s = "";
     proc.stdout.on("data", (d: Buffer) => (s += d.toString()));
     proc.on("error", reject);
-    proc.on("close", (code) => (code === 0 ? resolve(s) : reject(new Error(`ffprobe exited ${code}`))));
+    proc.on("close", (code) =>
+      code === 0 ? resolve(s) : reject(new Error(`ffprobe exited ${code}`)),
+    );
   });
   const ms = Number(out.trim()) * 1000;
   if (!Number.isFinite(ms)) throw new Error(`ffprobe: no duration for ${path}`);
