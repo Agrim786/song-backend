@@ -1,0 +1,44 @@
+{
+  "id": "mr-pop-f-01",
+  "version": 1,
+  "lang": "mr",
+  "genre": "pop",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "Dm4KgsnggxAUJBVg6eeJ",
+  "modelId": "music_v2_5",
+  "audioFile": "mr-pop-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nहे {name}, तू आहेस खास",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "marathi vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nहे {name}, तू आहेस खास",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "marathi vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

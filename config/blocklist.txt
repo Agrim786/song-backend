@@ -1,2 +1,68 @@
-# One blocked word per line (any script). Matched against each word of a name.
-# Fill this before launch.
+# Words that must never be sung as a name. One per line, any script; # = comment.
+# Entries of 5+ characters also match inside a name (so spelling variants and
+# "pehen chod"-style splits are caught); shorter entries match whole words only,
+# so real names that merely contain them (Gandhi, Chodavarapu) still work.
+# A starting list, not complete: extend it with native speakers before launch.
+
+# Hindi / Punjabi, Latin spellings
+henchod
+enchod
+bahanchod
+darchod
+madarchod
+maderchod
+chutiya
+chutiye
+chutiy
+bhosd
+bhosdike
+gandu
+gaand
+lauda
+laude
+lavda
+lawda
+harami
+haraami
+kamina
+kutti
+kutta
+saala
+saali
+chinal
+randwa
+jhaant
+# Hindi / Punjabi, native script
+बहनचोद
+बहेनचोद
+भेनचोद
+मादरचोद
+चूतिया
+चुतिया
+भोसड़ी
+भोसडी
+गांडू
+गाण्डू
+लौड़ा
+लौडा
+लवडा
+हरामी
+रंडी
+कुत्ती
+ਭੈਣਚੋਦ
+ਮਾਦਰਚੋਦ
+# English
+fuck
+fucker
+motherfuck
+shit
+bitch
+asshole
+bastard
+slut
+whore
+nigger
+nigga
+cunt
+dick
+pussy

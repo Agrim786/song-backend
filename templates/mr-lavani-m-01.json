@@ -1,0 +1,44 @@
+{
+  "id": "mr-lavani-m-01",
+  "version": 1,
+  "lang": "mr",
+  "genre": "lavani",
+  "spike": false,
+  "voice": "male",
+  "providerSongId": "kanwZSXhAHC983cFOmZh",
+  "modelId": "music_v2_5",
+  "audioFile": "mr-lavani-m-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nअहो {name}, या ना जवळ",
+      "styles": [
+        "lavani hook",
+        "bold male vocals",
+        "marathi vocals",
+        "dholki"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nअहो {name}, या ना जवळ",
+      "styles": [
+        "lavani hook",
+        "bold male vocals",
+        "marathi vocals",
+        "dholki"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

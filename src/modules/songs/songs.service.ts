@@ -34,7 +34,14 @@ export interface SongView {
   pollAfterSeconds?: number;
   // The app plays the template at once (same file for everyone, cached) and swaps
   // in the sung song before the music reaches nameAtMs.
-  intro?: { templateUrl: string; nameAtMs: number };
+  // durationMs + nameSpots let the app draw the song's shape (where the name is sung).
+  intro?: { templateUrl: string; nameAtMs: number; durationMs: number; nameSpots: { startMs: number; endMs: number }[] };
+  // The name as it is sung (cleaned up, e.g. "Priya"), and the song's style.
+  name: string;
+  genre?: string;
+  // The line being sung with the user's name in it, in the song's own script
+  // (e.g. "O Rahul, dil kahe tera naam"). The app shows it as the song's title.
+  lyric?: string;
 }
 
 export class SongService {
@@ -99,7 +106,15 @@ export class SongService {
   async view(songId: string): Promise<SongView> {
     const s = await this.songs.get(songId);
     if (!s) throw new AppError(404, "not_found", "Unknown song");
-    const base = { songId, status: s.status, templateId: s.templateId, intro: this.intro(s.templateId) };
+    const base = {
+      songId,
+      status: s.status,
+      templateId: s.templateId,
+      name: s.name,
+      genre: this.catalog.tryGet(s.templateId)?.genre,
+      intro: this.intro(s.templateId),
+      lyric: this.lyric(s.templateId, s.name),
+    };
     if (s.status === "ready") return { ...base, url: s.url, wait: "none" };
     // Failed: the app offers "try again", which re-queues it (see createOrJoin).
     if (s.status === "failed") return { ...base, wait: "none" };
@@ -110,12 +125,23 @@ export class SongService {
     return { ...base, wait: "short", etaSeconds, pollAfterSeconds: Math.min(10, Math.max(2, Math.ceil(etaSeconds / 3))) };
   }
 
+  private lyric(templateId: string, name: string): string | undefined {
+    const slot = this.catalog.tryGet(templateId)?.slots[0];
+    // Drop the section tag ("[Hook]") and join the lines into one.
+    return slot?.text.replace(/\[[^\]]*\]/g, "").replaceAll("{name}", name).replace(/\s+/g, " ").trim();
+  }
+
   private intro(templateId: string): SongView["intro"] {
     const t = this.catalog.tryGet(templateId);
     if (!t) return undefined;
     const base = (env.TEMPLATES_PUBLIC_BASE_URL ?? `${env.PUBLIC_BASE_URL.replace(/\/$/, "")}/files/templates`).replace(/\/$/, "");
     // ?v= so a re-recorded template is never served from an old cache entry.
-    return { templateUrl: `${base}/${t.audioFile}?v=${t.version}`, nameAtMs: this.catalog.firstNameAtMs(t) };
+    return {
+      templateUrl: `${base}/${t.audioFile}?v=${t.version}`,
+      nameAtMs: this.catalog.firstNameAtMs(t),
+      durationMs: t.durationMs,
+      nameSpots: t.slots.map((sl) => ({ startMs: sl.startMs, endMs: sl.endMs })),
+    };
   }
 
   // Runs on 2, 4, 8... waiters only, so a viral name costs a handful of Redis

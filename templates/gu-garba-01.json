@@ -4,6 +4,7 @@
   "lang": "gu",
   "genre": "garba",
   "spike": true,
+  "voice": "female",
   "providerSongId": "Adn3UVpvF3GUxY8FJRvn",
   "modelId": "music_v2_5",
   "audioFile": "gu-garba-01.mp3",

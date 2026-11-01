@@ -4,6 +4,7 @@
   "lang": "hi",
   "genre": "pop",
   "spike": true,
+  "voice": "female",
   "providerSongId": "WpmIAqRA64BLO3eujGUp",
   "modelId": "music_v2_5",
   "audioFile": "hi-pop-01.mp3",

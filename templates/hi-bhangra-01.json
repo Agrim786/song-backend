@@ -4,6 +4,7 @@
   "lang": "hi",
   "genre": "bhangra",
   "spike": false,
+  "voice": "male",
   "providerSongId": "lHpIiXdxpECHIDVF5RzL",
   "modelId": "music_v2_5",
   "audioFile": "hi-bhangra-01.mp3",

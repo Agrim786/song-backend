@@ -1,0 +1,44 @@
+{
+  "id": "pa-bhangra-f-01",
+  "version": 1,
+  "lang": "pa",
+  "genre": "bhangra",
+  "spike": true,
+  "voice": "female",
+  "providerSongId": "wlHjB0EAXtOK9NuAQFtS",
+  "modelId": "music_v2_5",
+  "audioFile": "pa-bhangra-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nਓ {name}, ਨੱਚ ਲੈ ਅੱਜ",
+      "styles": [
+        "bhangra hook",
+        "powerful female vocals",
+        "punjabi vocals",
+        "dhol"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nਓ {name}, ਨੱਚ ਲੈ ਅੱਜ",
+      "styles": [
+        "bhangra hook",
+        "powerful female vocals",
+        "punjabi vocals",
+        "dhol"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

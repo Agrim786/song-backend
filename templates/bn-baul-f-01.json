@@ -1,0 +1,44 @@
+{
+  "id": "bn-baul-f-01",
+  "version": 1,
+  "lang": "bn",
+  "genre": "baul",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "RaHDo3rxHlsE812LU9lS",
+  "modelId": "music_v2_5",
+  "audioFile": "bn-baul-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nও {name}, তুমি মনের মানুষ",
+      "styles": [
+        "baul hook",
+        "earthy female vocals",
+        "bengali vocals",
+        "ektara"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nও {name}, তুমি মনের মানুষ",
+      "styles": [
+        "baul hook",
+        "earthy female vocals",
+        "bengali vocals",
+        "ektara"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

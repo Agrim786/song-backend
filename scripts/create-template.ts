@@ -79,6 +79,22 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       styles: ["romantic marathi song", "soft piano", "strings", "acoustic guitar", "emotional", "slow tempo", "80 bpm", "male vocals"],
       hookStyles: ["romantic hook", "warm male vocals", "marathi vocals", "soft piano"],
     },
+    lavani: {
+      placeholder: "राया",
+      aliases: ["राया", "raya", "raaya"],
+      hook: "[Hook]\nअहो {name}, या ना जवळ",
+      verse: "[Verse]\nढोलकीच्या तालावर नाचू या\nआज रात्री गाणं गाऊ या",
+      styles: ["marathi lavani", "dholki", "tuntuni", "folk", "energetic", "festive", "120 bpm", "female vocals"],
+      hookStyles: ["lavani hook", "bold female vocals", "marathi vocals", "dholki"],
+    },
+    pop: {
+      placeholder: "मित्रा",
+      aliases: ["मित्रा", "mitra"],
+      hook: "[Hook]\nहे {name}, तू आहेस खास",
+      verse: "[Verse]\nचल आज ही रात आपली आहे\nप्रत्येक क्षण नवा आहे",
+      styles: ["upbeat marathi pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
+      hookStyles: ["catchy pop hook", "energetic female vocals", "marathi vocals", "synths"],
+    },
   },
   gu: {
     garba: {
@@ -88,6 +104,22 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       verse: "[Verse]\nઢોલ વાગે ને મન નાચે\nઆજે રાત આપણી સાથે",
       styles: ["gujarati garba", "dhol", "dandiya beats", "festive", "upbeat", "120 bpm", "female vocals"],
       hookStyles: ["catchy garba hook", "energetic female vocals", "gujarati vocals", "dhol"],
+    },
+    folk: {
+      placeholder: "વ્હાલા",
+      aliases: ["વ્હાલા", "vhala", "vahala"],
+      hook: "[Hook]\nઓ {name}, તું મારું ગીત",
+      verse: "[Verse]\nતારી યાદમાં રાત વીતે\nદિલ મારું તારા માટે ધબકે",
+      styles: ["gujarati folk", "romantic", "acoustic guitar", "flute", "soft dholak", "slow tempo", "85 bpm", "male vocals"],
+      hookStyles: ["romantic folk hook", "warm male vocals", "gujarati vocals", "flute"],
+    },
+    pop: {
+      placeholder: "દોસ્ત",
+      aliases: ["દોસ્ત", "dost"],
+      hook: "[Hook]\nહે {name}, તું છે સૌથી ખાસ",
+      verse: "[Verse]\nચાલ આજે રાત આપણી છે\nદરેક ધડકન નવી છે",
+      styles: ["upbeat gujarati pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
+      hookStyles: ["catchy pop hook", "energetic female vocals", "gujarati vocals", "synths"],
     },
   },
   pa: {
@@ -99,6 +131,22 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       styles: ["punjabi bhangra", "dhol", "tumbi", "high energy", "festive", "celebration", "125 bpm", "male vocals"],
       hookStyles: ["bhangra hook", "powerful male vocals", "punjabi vocals", "dhol"],
     },
+    romantic: {
+      placeholder: "ਮਾਹੀਆ",
+      aliases: ["ਮਾਹੀਆ", "ਮਾਹੀਏ", "mahiya", "maahiya"],
+      hook: "[Hook]\nਓ {name}, ਤੂੰ ਮੇਰਾ ਗੀਤ",
+      verse: "[Verse]\nਤੇਰੀ ਯਾਦ ਵਿੱਚ ਰਾਤਾਂ ਲੰਘਣ\nਦਿਲ ਮੇਰਾ ਤੇਰੇ ਲਈ ਧੜਕੇ",
+      styles: ["punjabi romantic ballad", "acoustic guitar", "strings", "soft", "emotional", "slow tempo", "80 bpm", "male vocals"],
+      hookStyles: ["romantic hook", "warm male vocals", "punjabi vocals", "acoustic guitar"],
+    },
+    sufi: {
+      placeholder: "ਯਾਰਾ",
+      aliases: ["ਯਾਰਾ", "yaara", "yara"],
+      hook: "[Hook]\n{name}, ਤੂੰ ਹੀ ਮੇਰੀ ਇਬਾਦਤ",
+      verse: "[Verse]\nਰੂਹ ਵਿੱਚ ਤੇਰਾ ਨੂਰ ਵਸੇ\nਹਰ ਸਾਹ ਵਿੱਚ ਤੂੰ ਹੀ ਹੱਸੇ",
+      styles: ["punjabi sufi", "harmonium", "tabla", "soulful", "spiritual", "qawwali influence", "90 bpm", "male vocals"],
+      hookStyles: ["soulful sufi hook", "deep male vocals", "punjabi vocals", "harmonium"],
+    },
   },
   bn: {
     love: {
@@ -108,6 +156,22 @@ const PRESETS: Record<string, Record<string, Preset>> = {
       verse: "[Verse]\nতোমার হাসিতে আলো জ্বলে\nমন আমার তোমায় বলে",
       styles: ["bengali romantic song", "acoustic guitar", "flute", "soft", "melodic", "85 bpm", "male vocals"],
       hookStyles: ["romantic hook", "warm male vocals", "bengali vocals", "acoustic guitar"],
+    },
+    baul: {
+      placeholder: "মাঝি",
+      aliases: ["মাঝি", "majhi", "maajhi"],
+      hook: "[Hook]\nও {name}, তুমি মনের মানুষ",
+      verse: "[Verse]\nনদীর ধারে একতারা বাজে\nমন আমার পথে পথে সাজে",
+      styles: ["bengali baul folk", "ektara", "dotara", "khamak", "rustic", "soulful", "95 bpm", "male vocals"],
+      hookStyles: ["baul hook", "earthy male vocals", "bengali vocals", "ektara"],
+    },
+    pop: {
+      placeholder: "সোনা",
+      aliases: ["সোনা", "sona", "shona"],
+      hook: "[Hook]\nহে {name}, তুমি সবার সেরা",
+      verse: "[Verse]\nচলো আজ রাতটা আমাদের\nপ্রতিটা মুহূর্ত নতুন ভোরের",
+      styles: ["upbeat bengali pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
+      hookStyles: ["catchy pop hook", "energetic female vocals", "bengali vocals", "synths"],
     },
   },
 };
@@ -123,6 +187,8 @@ const { values } = parseArgs({
     "dry-run": { type: "boolean", default: false },
     "max-attempts": { type: "string", default: "4" },
     "skip-check": { type: "boolean", default: false },
+    // Sing this style with a male or female voice (default: the preset's own).
+    voice: { type: "string" },
   },
 });
 const byLang = PRESETS[values.lang!];
@@ -134,7 +200,19 @@ if (!found) {
 }
 const preset: Preset = found;
 
-const id = values.id ?? `${values.lang}-${values.genre}-01`;
+// The preset's own voice, from its style tags; --voice swaps every vocal tag.
+const presetVoice = [...preset.styles, ...preset.hookStyles].some((t) => /\bfemale\b/.test(t)) ? "female" : "male";
+const voice = values.voice ?? presetVoice;
+if (voice !== "male" && voice !== "female") {
+  console.error("--voice must be male or female");
+  process.exit(1);
+}
+const withVoice = (tags: string[]) => tags.map((t) => t.replace(/\b(?:fe)?male\b/g, voice));
+preset.styles = withVoice(preset.styles);
+preset.hookStyles = withVoice(preset.hookStyles);
+
+// New templates name their voice: hi-sufi-f-01, hi-sufi-m-01.
+const id = values.id ?? `${values.lang}-${values.genre}-${voice[0]}-01`;
 // 6 s intro | 4 s hook | 8 s verse | 4 s hook | 5 s outro = 27 s. Hooks at 6-10 s and 18-22 s.
 const sections = [
   { ms: 6000, hook: false, text: "[Intro]\n{instrumental}", styles: [...preset.styles.filter((s) => !s.includes("vocals")), "instrumental intro"], neg: ["vocals", "singing", "spoken words"] },
@@ -253,6 +331,7 @@ const entry = {
   lang: values.lang,
   genre: values.genre,
   spike: values.spike,
+  voice,
   providerSongId: accepted.songId,
   modelId: values.model,
   audioFile,

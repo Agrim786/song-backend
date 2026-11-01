@@ -19,6 +19,8 @@ const templateSchema = z.object({
   genre: z.string(),
   // Part of the small set used during spikes so identical names collapse onto one job.
   spike: z.boolean().default(false),
+  // Who sings it. Each style exists in both voices; the picker mixes them.
+  voice: z.enum(["male", "female"]).optional(),
   providerSongId: z.string(),
   modelId: z.string().default("music_v2_5"),
   audioFile: z.string(),

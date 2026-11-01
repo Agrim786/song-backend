@@ -1,0 +1,44 @@
+{
+  "id": "hi-love-f-01",
+  "version": 1,
+  "lang": "hi",
+  "genre": "love",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "vjF8MBRfkVdT273kF0Cn",
+  "modelId": "music_v2_5",
+  "audioFile": "hi-love-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nओ {name}, दिल कहे तेरा नाम",
+      "styles": [
+        "romantic hook",
+        "warm female vocals",
+        "hindi vocals",
+        "soft piano"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nओ {name}, दिल कहे तेरा नाम",
+      "styles": [
+        "romantic hook",
+        "warm female vocals",
+        "hindi vocals",
+        "soft piano"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

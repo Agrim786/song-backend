@@ -1,6 +1,8 @@
 import { env } from "../config/env.js";
 import { MockStt } from "../modules/names/stt/mock.js";
+import { ElevenLabsStt } from "../modules/names/stt/elevenlabs.js";
 import { SarvamStt } from "../modules/names/stt/sarvam.js";
+import type { SpeechToText } from "../modules/names/stt/stt.js";
 import { EtaEstimator } from "../modules/songs/eta.js";
 import { SongRepo } from "../modules/songs/songs.repo.js";
 import { SongService } from "../modules/songs/songs.service.js";
@@ -18,7 +20,8 @@ const queues = createQueues();
 const songRepo = new SongRepo(redis);
 const eta = new EtaEstimator(() => songRepo.pendingCount(catalog.ids()), redis, env.PROVIDER_CONCURRENCY, env.SECONDS_PER_SONG_ESTIMATE);
 const songs = new SongService(redis, catalog, songRepo, queues, eta);
-const stt = env.STT_PROVIDER === "sarvam" ? new SarvamStt(env.SARVAM_API_KEY!) : new MockStt();
+const stt: SpeechToText =
+  env.STT_PROVIDER === "elevenlabs" ? new ElevenLabsStt(env.ELEVENLABS_API_KEY!) : env.STT_PROVIDER === "sarvam" ? new SarvamStt(env.SARVAM_API_KEY!) : new MockStt();
 
 const app = buildApp({ redis, catalog, queues, songs, stt });
 const server = app.listen(env.PORT, (err?: Error) => {

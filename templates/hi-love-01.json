@@ -4,6 +4,7 @@
   "lang": "hi",
   "genre": "love",
   "spike": true,
+  "voice": "male",
   "providerSongId": "ITHxJf1HxVQlHJ87lbQP",
   "modelId": "music_v2_5",
   "audioFile": "hi-love-01.mp3",

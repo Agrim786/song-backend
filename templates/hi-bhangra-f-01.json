@@ -1,0 +1,44 @@
+{
+  "id": "hi-bhangra-f-01",
+  "version": 1,
+  "lang": "hi",
+  "genre": "bhangra",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "jz26fPr46gMc2KU9dJDU",
+  "modelId": "music_v2_5",
+  "audioFile": "hi-bhangra-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nओ {name}, नच ले आज",
+      "styles": [
+        "bhangra hook",
+        "powerful female vocals",
+        "punjabi style vocals",
+        "dhol"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nओ {name}, नच ले आज",
+      "styles": [
+        "bhangra hook",
+        "powerful female vocals",
+        "punjabi style vocals",
+        "dhol"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

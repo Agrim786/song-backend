@@ -1,0 +1,44 @@
+{
+  "id": "pa-romantic-m-01",
+  "version": 1,
+  "lang": "pa",
+  "genre": "romantic",
+  "spike": false,
+  "voice": "male",
+  "providerSongId": "d98EuMjbg2biC6ZsgW9j",
+  "modelId": "music_v2_5",
+  "audioFile": "pa-romantic-m-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nਓ {name}, ਤੂੰ ਮੇਰਾ ਗੀਤ",
+      "styles": [
+        "romantic hook",
+        "warm male vocals",
+        "punjabi vocals",
+        "acoustic guitar"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nਓ {name}, ਤੂੰ ਮੇਰਾ ਗੀਤ",
+      "styles": [
+        "romantic hook",
+        "warm male vocals",
+        "punjabi vocals",
+        "acoustic guitar"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "gu-folk-f-01",
+  "version": 1,
+  "lang": "gu",
+  "genre": "folk",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "Yz7lna0wiz6X6SN4gwyy",
+  "modelId": "music_v2_5",
+  "audioFile": "gu-folk-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nઓ {name}, તું મારું ગીત",
+      "styles": [
+        "romantic folk hook",
+        "warm female vocals",
+        "gujarati vocals",
+        "flute"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nઓ {name}, તું મારું ગીત",
+      "styles": [
+        "romantic folk hook",
+        "warm female vocals",
+        "gujarati vocals",
+        "flute"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

@@ -13,6 +13,12 @@ const blocked: Set<string> = existsSync(FILE)
     )
   : new Set();
 
+// Distinctive stems (5+ characters) also match inside a name, which catches
+// spelling variants and splits; short words match whole words only, so real names
+// that merely contain them are never blocked.
+const stems = [...blocked].filter((w) => w.length >= 5);
+
 export function isBlockedName(key: string): boolean {
-  return key.split(/[\s-]+/).some((part) => blocked.has(part)) || blocked.has(key);
+  const joined = key.replace(/[\s'-]+/g, "");
+  return key.split(/[\s-]+/).some((part) => blocked.has(part)) || stems.some((w) => joined.includes(w));
 }

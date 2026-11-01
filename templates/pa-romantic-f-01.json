@@ -1,0 +1,44 @@
+{
+  "id": "pa-romantic-f-01",
+  "version": 1,
+  "lang": "pa",
+  "genre": "romantic",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "27Iy42pc4C6MP7rBtb2N",
+  "modelId": "music_v2_5",
+  "audioFile": "pa-romantic-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nਓ {name}, ਤੂੰ ਮੇਰਾ ਗੀਤ",
+      "styles": [
+        "romantic hook",
+        "warm female vocals",
+        "punjabi vocals",
+        "acoustic guitar"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nਓ {name}, ਤੂੰ ਮੇਰਾ ਗੀਤ",
+      "styles": [
+        "romantic hook",
+        "warm female vocals",
+        "punjabi vocals",
+        "acoustic guitar"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "hi-lofi-f-01",
+  "version": 1,
+  "lang": "hi",
+  "genre": "lofi",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "TNqwoSqZ3GzlGiZLE4sH",
+  "modelId": "music_v2_5",
+  "audioFile": "hi-lofi-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\n{name}, बस तू ही तू",
+      "styles": [
+        "dreamy hook",
+        "soft female vocals",
+        "hindi vocals",
+        "mellow keys"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\n{name}, बस तू ही तू",
+      "styles": [
+        "dreamy hook",
+        "soft female vocals",
+        "hindi vocals",
+        "mellow keys"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

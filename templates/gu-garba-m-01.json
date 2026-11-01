@@ -1,0 +1,44 @@
+{
+  "id": "gu-garba-m-01",
+  "version": 1,
+  "lang": "gu",
+  "genre": "garba",
+  "spike": true,
+  "voice": "male",
+  "providerSongId": "ZRLD75N5cmkGKo35hJdv",
+  "modelId": "music_v2_5",
+  "audioFile": "gu-garba-m-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nઓ {name}, તું છે ખાસ",
+      "styles": [
+        "catchy garba hook",
+        "energetic male vocals",
+        "gujarati vocals",
+        "dhol"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nઓ {name}, તું છે ખાસ",
+      "styles": [
+        "catchy garba hook",
+        "energetic male vocals",
+        "gujarati vocals",
+        "dhol"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

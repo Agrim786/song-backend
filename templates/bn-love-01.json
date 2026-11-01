@@ -4,6 +4,7 @@
   "lang": "bn",
   "genre": "love",
   "spike": true,
+  "voice": "male",
   "providerSongId": "DLygiY67Cmy0JLHOWG9b",
   "modelId": "music_v2_5",
   "audioFile": "bn-love-01.mp3",

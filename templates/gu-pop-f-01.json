@@ -1,0 +1,44 @@
+{
+  "id": "gu-pop-f-01",
+  "version": 1,
+  "lang": "gu",
+  "genre": "pop",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "1pRk4UEItfBG4zuMzpcn",
+  "modelId": "music_v2_5",
+  "audioFile": "gu-pop-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nહે {name}, તું છે સૌથી ખાસ",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "gujarati vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nહે {name}, તું છે સૌથી ખાસ",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "gujarati vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

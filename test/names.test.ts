@@ -19,3 +19,10 @@ test("lyric injection characters are stripped, junk rejected", () => {
   assert.equal(normalizeName("1234 !!!"), null);
   assert.equal(normalizeName("a".repeat(41)), null);
 });
+
+test("blocklist: catches variants and splits, never blocks real names that contain a short word", async () => {
+  const { isBlockedName } = await import("../src/modules/names/blocklist.js");
+  const key = (s: string) => normalizeName(s)!.key;
+  for (const bad of ["Pehenchod", "Behen Chod", "bhen-chod", "Madarchod", "Chutiya"]) assert.equal(isBlockedName(key(bad)), true, bad);
+  for (const ok of ["Priya", "Gandhi", "Chodavarapu", "Randi", "Dikshit", "Shital"]) assert.equal(isBlockedName(key(ok)), false, ok);
+});

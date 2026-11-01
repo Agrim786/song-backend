@@ -29,7 +29,7 @@ const schema = z
     MOCK_CONCURRENCY: z.coerce.number().int().min(1).default(2),
     MOCK_FAIL_RATE: z.coerce.number().min(0).max(1).default(0),
 
-    STT_PROVIDER: z.enum(["sarvam", "mock"]).default("mock"),
+    STT_PROVIDER: z.enum(["elevenlabs", "sarvam", "mock"]).default("mock"),
     SARVAM_API_KEY: z.string().optional(),
     STT_MAX_PER_MINUTE: z.coerce.number().int().min(1).default(60),
 
@@ -59,6 +59,7 @@ const schema = z
     };
     need(e.SINGING_PROVIDER === "elevenlabs" && !e.ELEVENLABS_API_KEY, "ELEVENLABS_API_KEY", "required when SINGING_PROVIDER=elevenlabs");
     need(e.STT_PROVIDER === "sarvam" && !e.SARVAM_API_KEY, "SARVAM_API_KEY", "required when STT_PROVIDER=sarvam");
+    need(e.STT_PROVIDER === "elevenlabs" && !e.ELEVENLABS_API_KEY, "ELEVENLABS_API_KEY", "required when STT_PROVIDER=elevenlabs");
     need(e.STORAGE_DRIVER === "s3" && !(e.S3_BUCKET && e.S3_PUBLIC_BASE_URL), "S3_BUCKET", "S3_BUCKET and S3_PUBLIC_BASE_URL required when STORAGE_DRIVER=s3");
   });
 

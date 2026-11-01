@@ -5,12 +5,13 @@ const URL = "https://api.sarvam.ai/speech-to-text";
 export class SarvamStt implements SpeechToText {
   constructor(private readonly apiKey: string) {}
 
-  async transcribe(audio: Buffer, mime: string, lang: string): Promise<string | null> {
+  async transcribe(audio: Buffer, mime: string, lang?: string): Promise<string | null> {
     const form = new FormData();
     form.append("file", new Blob([new Uint8Array(audio)], { type: mime }), "name");
     form.append("model", "saaras:v3");
     form.append("mode", "transcribe");
-    form.append("language_code", `${lang}-IN`);
+    // Sarvam needs a language; Hindi is the safe default when the app has not asked yet.
+    form.append("language_code", `${lang ?? "hi"}-IN`);
     const res = await fetch(URL, {
       method: "POST",
       headers: { "api-subscription-key": this.apiKey },

@@ -1,0 +1,44 @@
+{
+  "id": "bn-pop-f-01",
+  "version": 1,
+  "lang": "bn",
+  "genre": "pop",
+  "spike": false,
+  "voice": "female",
+  "providerSongId": "886nkwRwEpsaYPiQ10jR",
+  "modelId": "music_v2_5",
+  "audioFile": "bn-pop-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nহে {name}, তুমি সবার সেরা",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "bengali vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nহে {name}, তুমি সবার সেরা",
+      "styles": [
+        "catchy pop hook",
+        "energetic female vocals",
+        "bengali vocals",
+        "synths"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

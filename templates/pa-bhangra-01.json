@@ -4,6 +4,7 @@
   "lang": "pa",
   "genre": "bhangra",
   "spike": true,
+  "voice": "male",
   "providerSongId": "SdcgPoab3wT6VOx5jcd9",
   "modelId": "music_v2_5",
   "audioFile": "pa-bhangra-01.mp3",

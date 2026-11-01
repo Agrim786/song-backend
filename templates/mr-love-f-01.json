@@ -1,0 +1,44 @@
+{
+  "id": "mr-love-f-01",
+  "version": 1,
+  "lang": "mr",
+  "genre": "love",
+  "spike": true,
+  "voice": "female",
+  "providerSongId": "cokiuh7tbNBTC6thFd8D",
+  "modelId": "music_v2_5",
+  "audioFile": "mr-love-f-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nअरे {name}, तूच माझं गाणं",
+      "styles": [
+        "romantic hook",
+        "warm female vocals",
+        "marathi vocals",
+        "soft piano"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nअरे {name}, तूच माझं गाणं",
+      "styles": [
+        "romantic hook",
+        "warm female vocals",
+        "marathi vocals",
+        "soft piano"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

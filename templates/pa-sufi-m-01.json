@@ -1,0 +1,44 @@
+{
+  "id": "pa-sufi-m-01",
+  "version": 1,
+  "lang": "pa",
+  "genre": "sufi",
+  "spike": false,
+  "voice": "male",
+  "providerSongId": "sOsUjYklI0Lw6wmaKKGU",
+  "modelId": "music_v2_5",
+  "audioFile": "pa-sufi-m-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\n{name}, ਤੂੰ ਹੀ ਮੇਰੀ ਇਬਾਦਤ",
+      "styles": [
+        "soulful sufi hook",
+        "deep male vocals",
+        "punjabi vocals",
+        "harmonium"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\n{name}, ਤੂੰ ਹੀ ਮੇਰੀ ਇਬਾਦਤ",
+      "styles": [
+        "soulful sufi hook",
+        "deep male vocals",
+        "punjabi vocals",
+        "harmonium"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

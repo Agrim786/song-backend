@@ -4,6 +4,7 @@
   "lang": "mr",
   "genre": "love",
   "spike": true,
+  "voice": "male",
   "providerSongId": "4kRtSIGBd1e5NR5Oh5rd",
   "modelId": "music_v2_5",
   "audioFile": "mr-love-01.mp3",
