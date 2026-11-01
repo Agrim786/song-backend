@@ -71,6 +71,30 @@ export class Catalog {
     return t;
   }
 
+  byAudioFile(file: string): Template | undefined {
+    return [...this.byId.values()].find((t) => t.audioFile === file);
+  }
+
+  tryGet(id: string): Template | undefined {
+    return this.byId.get(id);
+  }
+
+  // Languages we can sing in = languages that have templates. Adding a language
+  // means adding its templates, nothing else.
+  langs(): string[] {
+    return [...new Set([...this.byId.values()].map((t) => t.lang))].sort();
+  }
+
+  ids(): string[] {
+    return [...this.byId.keys()];
+  }
+
+  // The template's first name spot: the app plays the template from 0 and must have
+  // the sung song by this moment for the swap to be seamless.
+  firstNameAtMs(t: Template): number {
+    return t.slots[0]!.startMs;
+  }
+
   forLang(lang: string, genre?: string): Template[] {
     return [...this.byId.values()].filter((t) => t.lang === lang && (!genre || t.genre === genre));
   }

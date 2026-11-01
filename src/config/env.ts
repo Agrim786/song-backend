@@ -12,15 +12,20 @@ const schema = z
     TRUST_PROXY: z.coerce.number().int().min(0).default(1),
 
     TEMPLATES_DIR: z.string().default("./templates"),
-    SUPPORTED_LANGS: z.string().default("hi,en"),
+    // Where the app downloads template audio to start the intro at tap. Defaults to
+    // this API's /files/templates; set to the CDN when templates are uploaded there.
+    TEMPLATES_PUBLIC_BASE_URL: z.string().optional(),
 
     SINGING_PROVIDER: z.enum(["elevenlabs", "mock"]).default("mock"),
     ELEVENLABS_API_KEY: z.string().optional(),
     PROVIDER_CONCURRENCY: z.coerce.number().int().min(1).default(2),
     CLIP_CONTEXT_MS: z.coerce.number().int().min(50).default(1000),
     SECONDS_PER_SONG_ESTIMATE: z.coerce.number().positive().default(3.5),
+    // Names per provider call when the line is long (provider max is 5 for 2-slot templates).
+    MAX_NAMES_PER_CALL: z.coerce.number().int().min(1).max(10).default(5),
 
-    MOCK_LATENCY_MS: z.coerce.number().int().min(0).default(3500),
+    MOCK_LATENCY_MS: z.coerce.number().int().min(0).default(3300),
+    MOCK_LATENCY_PER_EXTRA_SECTION_MS: z.coerce.number().int().min(0).default(475),
     MOCK_CONCURRENCY: z.coerce.number().int().min(1).default(2),
     MOCK_FAIL_RATE: z.coerce.number().min(0).max(1).default(0),
 
@@ -29,7 +34,8 @@ const schema = z
     STT_MAX_PER_MINUTE: z.coerce.number().int().min(1).default(60),
 
     SPIKE_ETA_SECONDS: z.coerce.number().min(0).default(30),
-    PREVIEW_ETA_SECONDS: z.coerce.number().min(0).default(30),
+    // Above this wait the app stops showing a countdown and says "come back in a bit".
+    LATER_AFTER_SECONDS: z.coerce.number().min(1).default(60),
 
     STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
     LOCAL_STORAGE_DIR: z.string().default("./data/files"),
@@ -45,7 +51,6 @@ const schema = z
     RATE_LIMIT_IP_PER_MIN: z.coerce.number().int().min(1).default(20_000),
     LOADTEST_TOKEN: z.string().optional(),
 
-    PREVIEW_CONCURRENCY: z.coerce.number().int().min(0).default(0),
     WORKER_METRICS_PORT: z.coerce.number().int().positive().default(9100),
   })
   .superRefine((e, ctx) => {
@@ -71,4 +76,3 @@ function load(): Env {
 }
 
 export const env = load();
-export const supportedLangs = env.SUPPORTED_LANGS.split(",").map((s) => s.trim()).filter(Boolean);

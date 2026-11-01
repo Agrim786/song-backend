@@ -33,6 +33,7 @@ const processor = createSingProcessor({
   provider,
   breaker: new CircuitBreaker(),
   getWorker: () => worker!,
+  backlog: () => songs.pendingCount(catalog.ids()),
 });
 
 worker = new Worker<SingJobData>(QUEUE.sing, processor, {
@@ -44,9 +45,10 @@ worker = new Worker<SingJobData>(QUEUE.sing, processor, {
 worker.on("failed", (job, err) => {
   if (!job) return;
   const final = job.attemptsMade >= (job.opts.attempts ?? 1);
-  logger.warn({ songId: job.data.songId, attempt: job.attemptsMade, final, err: err.message }, "sing job failed");
-  // Final failure: the next request for this name re-queues it (see createOrJoin).
-  if (final) void songs.markFailed(job.data.songId, err.message);
+  logger.warn({ songId: job.data.songId, batch: job.data.batch?.length, attempt: job.attemptsMade, final, err: err.message }, "sing job failed");
+  // Final failure: every song in this job's batch is marked failed; the next request
+  // for any of them re-queues it (see createOrJoin).
+  if (final) for (const id of job.data.batch ?? [job.data.songId]) void songs.markFailed(id, err.message);
 });
 worker.on("error", (err) => logger.error({ err }, "worker error"));
 

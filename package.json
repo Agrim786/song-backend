@@ -2,7 +2,7 @@
   "name": "name-song-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "Say your name, get a song. Spike-safe backend: queue behind the provider limit, cache + dedupe, load-aware template picker, instant preview fallback.",
+  "description": "Say your name, get a song. Spike-safe backend: queue behind the provider limit, cache + dedupe, load-aware template picker, adaptive batching of provider calls.",
   "type": "module",
   "engines": {
     "node": ">=20.6"
@@ -10,12 +10,10 @@
   "scripts": {
     "dev:api": "tsx watch --env-file=.env src/apps/api.ts",
     "dev:sing": "tsx watch --env-file=.env src/apps/sing-worker.ts",
-    "dev:preview": "tsx watch --env-file=.env src/apps/preview-worker.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
     "start:api": "node dist/src/apps/api.js",
     "start:sing": "node dist/src/apps/sing-worker.js",
-    "start:preview": "node dist/src/apps/preview-worker.js",
     "test": "tsx --test test/*.test.ts",
     "import-template": "tsx --env-file=.env scripts/import-template.ts"
   },

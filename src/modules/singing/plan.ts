@@ -52,6 +52,31 @@ export function buildClipPlan(t: Template, lyricName: string, ctxMs: number) {
   return { plan: { chunks } satisfies CompositionPlan, layouts, clipDurationMs: cursor };
 }
 
+// ElevenLabs rejects plans with more than 30 chunks (measured: 422 "at most 30 items").
+export const MAX_PLAN_CHUNKS = 30;
+
+// How many names fit in one provider call for this template: each slot costs
+// 3 chunks (context before, the name, context after).
+export const maxNamesPerCall = (t: Template) => Math.max(1, Math.floor(MAX_PLAN_CHUNKS / (3 * t.slots.length)));
+
+// Several people's names in ONE provider call, back to back. Measured on the real
+// API: 5 names take ~7 s vs ~3.4 s for 1, so throughput per slot is ~2.3x, at the
+// same cost per name (billing is per second of audio returned). Each person's
+// layouts point into the shared clip, so splicePieces/stitchClip work unchanged.
+export function buildBatchPlan(t: Template, lyricNames: string[], ctxMs: number) {
+  if (lyricNames.length > maxNamesPerCall(t)) throw new Error(`batch of ${lyricNames.length} exceeds ${maxNamesPerCall(t)} for ${t.id}`);
+  const chunks: CompositionPlan["chunks"] = [];
+  const people: SlotLayout[][] = [];
+  let offset = 0;
+  for (const name of lyricNames) {
+    const one = buildClipPlan(t, name, ctxMs);
+    chunks.push(...one.plan.chunks);
+    people.push(one.layouts.map((l) => ({ ...l, clipOffsetMs: l.clipOffsetMs + offset })));
+    offset += one.clipDurationMs;
+  }
+  return { plan: { chunks } satisfies CompositionPlan, people, clipDurationMs: offset };
+}
+
 // Cut points sit in the middle of each context window, where template and clip
 // carry the same music, so the crossfade is inaudible. Output length == template length.
 export function splicePieces(layouts: SlotLayout[], templateDurationMs: number): Piece[] {

@@ -1,0 +1,43 @@
+{
+  "id": "bn-love-01",
+  "version": 1,
+  "lang": "bn",
+  "genre": "love",
+  "spike": true,
+  "providerSongId": "DLygiY67Cmy0JLHOWG9b",
+  "modelId": "music_v2_5",
+  "audioFile": "bn-love-01.mp3",
+  "durationMs": 27000,
+  "slots": [
+    {
+      "startMs": 6000,
+      "endMs": 10000,
+      "text": "[Hook]\nও {name}, তুমি আমার গান",
+      "styles": [
+        "romantic hook",
+        "warm male vocals",
+        "bengali vocals",
+        "acoustic guitar"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    },
+    {
+      "startMs": 18000,
+      "endMs": 22000,
+      "text": "[Hook]\nও {name}, তুমি আমার গান",
+      "styles": [
+        "romantic hook",
+        "warm male vocals",
+        "bengali vocals",
+        "acoustic guitar"
+      ],
+      "negativeStyles": [
+        "whisper",
+        "spoken word"
+      ]
+    }
+  ]
+}

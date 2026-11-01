@@ -19,9 +19,10 @@ const isRef = (c: GenerationChunk | ReferenceChunk): c is ReferenceChunk =>
   "song_id" in c;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// Behaves like the real provider as measured (latency ~3.5 s, hard concurrency
-// limit with 429s) and returns real audio, so stitching load is real. Lets us
-// load test our own system without touching ElevenLabs.
+// Behaves like the real provider as measured on 1 Nov 2026: ~3.3 s for one name
+// (2 sung sections), ~0.475 s more per extra sung section (5 names = 10 sections
+// took ~7.1 s), a hard limit of 2 parallel calls with 429s beyond it. Returns real
+// audio, so stitching load is real. Lets us load test without touching ElevenLabs.
 export class MockProvider implements SingingProvider {
   readonly name = "mock";
   constructor(
@@ -39,7 +40,9 @@ export class MockProvider implements SingingProvider {
         throw new ProviderError(503, "mock failure");
       const started = Date.now();
       const audio = await this.render(plan);
-      const target = env.MOCK_LATENCY_MS * (0.85 + Math.random() * 0.3);
+      const sung = plan.chunks.filter((c) => !isRef(c)).length;
+      const base = env.MOCK_LATENCY_MS + env.MOCK_LATENCY_PER_EXTRA_SECTION_MS * Math.max(0, sung - 2);
+      const target = base * (0.9 + Math.random() * 0.2);
       await sleep(Math.max(0, target - (Date.now() - started)));
       return audio;
     } finally {

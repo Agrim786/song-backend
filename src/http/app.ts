@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { resolve } from "node:path";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
@@ -6,13 +7,10 @@ import type { Redis } from "ioredis";
 import { pinoHttp } from "pino-http";
 import { env } from "../config/env.js";
 import { httpDuration, queueJobs, registry } from "../shared/metrics.js";
-import type { PreviewService } from "../modules/previews/previews.service.js";
-import type { RecordingRepo } from "../modules/names/recordings.repo.js";
-import { recordingRoutes } from "../modules/names/names.routes.js";
+import { nameRoutes } from "../modules/names/names.routes.js";
 import type { SpeechToText } from "../modules/names/stt/stt.js";
 import { songRoutes } from "../modules/songs/songs.routes.js";
 import type { SongService } from "../modules/songs/songs.service.js";
-import type { FileStorage } from "../shared/storage/storage.js";
 import type { Catalog } from "../modules/templates/catalog.js";
 import type { Queues } from "../shared/queues.js";
 import { logger } from "../shared/logger.js";
@@ -23,10 +21,7 @@ export interface AppDeps {
   redis: Redis;
   catalog: Catalog;
   queues: Queues;
-  storage: FileStorage;
   songs: SongService;
-  previews: PreviewService;
-  recordings: RecordingRepo;
   stt: SpeechToText;
 }
 
@@ -64,13 +59,18 @@ export function buildApp(d: AppDeps) {
   const writes = perClientLimiter(d.redis, "w", env.RATE_LIMIT_SONGS_PER_MIN);
   const reads = perClientLimiter(d.redis, "r", env.RATE_LIMIT_READS_PER_MIN);
   app.use("/v1", ipCeiling, (req, res, next) => (req.method === "GET" ? reads : writes)(req, res, next));
-  app.use("/v1", recordingRoutes(d.redis, d.storage, d.recordings, d.stt));
-  app.use("/v1", songRoutes(d.songs, d.previews));
+  app.use("/v1", nameRoutes(d.redis, d.catalog, d.stt));
+  app.use("/v1", songRoutes(d.songs));
 
+  // Template audio for the app's instant intro. Only files the catalog names are
+  // served (the template JSON next to them holds provider ids). ?v= busts caches.
+  app.get("/files/templates/:file", (req, res, next) => {
+    const t = d.catalog.byAudioFile(req.params.file);
+    if (!t) return next();
+    res.sendFile(resolve(d.catalog.audioPath(t)), { maxAge: "1d" });
+  });
   if (env.STORAGE_DRIVER === "local") {
     app.use("/files/songs", express.static(`${env.LOCAL_STORAGE_DIR}/songs`, { immutable: true, maxAge: "365d" }));
-    app.use("/files/previews", express.static(`${env.LOCAL_STORAGE_DIR}/previews`));
-    // Recordings are never served publicly.
   }
 
   app.use(notFound);

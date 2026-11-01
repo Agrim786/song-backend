@@ -40,9 +40,10 @@ export const providerLatency = new Histogram({
   registers: [registry],
 });
 
-export const previewsTotal = new Counter({
-  name: "previews_total",
-  help: "Instant own-voice previews created",
+export const namesPerCall = new Histogram({
+  name: "provider_names_per_call",
+  help: "Names sung per provider call (1 when calm, up to 5 when busy)",
+  buckets: [1, 2, 3, 4, 5],
   registers: [registry],
 });
 

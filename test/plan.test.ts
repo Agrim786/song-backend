@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildClipPlan, splicePieces } from "../src/modules/singing/plan.js";
+import { buildBatchPlan, buildClipPlan, maxNamesPerCall, splicePieces } from "../src/modules/singing/plan.js";
 import type { Template } from "../src/modules/templates/catalog.js";
 
 // Wrong offsets here would put the name in the wrong place for every user,
@@ -40,4 +40,18 @@ test("splice keeps total length and cuts mid-context", () => {
   assert.deepEqual(pieces[2], { src: "template", startMs: 10_500, endMs: 17_500 });
   assert.deepEqual(pieces[3], { src: "clip", startMs: 6500, endMs: 11_500 });
   assert.deepEqual(pieces[4], { src: "template", startMs: 22_500, endMs: 27_000 });
+});
+
+test("batch plan: each person's name lands in their own part of the shared clip", () => {
+  assert.equal(maxNamesPerCall(tpl), 5); // 30 chunks / (3 per slot x 2 slots)
+  const { plan, people, clipDurationMs } = buildBatchPlan(tpl, ["A", "B", "C"], 1000);
+  assert.equal(plan.chunks.length, 18);
+  assert.equal(clipDurationMs, 36_000);
+  assert.equal((plan.chunks[7] as { text: string }).text, "[Hook]\nजन्मदिन मुबारक B!");
+  // Person 3 is spliced from 24 s into the clip onward; song length is unchanged.
+  const pieces = splicePieces(people[2]!, tpl.durationMs);
+  assert.deepEqual(pieces[1], { src: "clip", startMs: 24_500, endMs: 29_500 });
+  assert.deepEqual(pieces[3], { src: "clip", startMs: 30_500, endMs: 35_500 });
+  assert.equal(pieces.reduce((a, p) => a + (p.endMs - p.startMs), 0), tpl.durationMs);
+  assert.throws(() => buildBatchPlan(tpl, ["1", "2", "3", "4", "5", "6"], 1000));
 });

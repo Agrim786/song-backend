@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { AppError } from "../../shared/errors.js";
-import type { PreviewService } from "../previews/previews.service.js";
 import { createSongBody } from "./songs.schema.js";
-import type { SongService } from "./songs.service.js";
+import type { SongService, SongView } from "./songs.service.js";
 
-export function songRoutes(songs: SongService, previews: PreviewService) {
+// Tells well-behaved clients when to ask again, so waiting users don't poll every second.
+const hint = (res: { set: (k: string, v: string) => unknown }, v: SongView) => {
+  if (v.pollAfterSeconds) res.set("Retry-After", String(v.pollAfterSeconds));
+};
+
+export function songRoutes(songs: SongService) {
   const r = Router();
 
   // 200 if the song already exists (instant), 202 if it is queued.
@@ -12,18 +16,15 @@ export function songRoutes(songs: SongService, previews: PreviewService) {
     const body = createSongBody.parse(req.body);
     const idem = req.get("idempotency-key")?.slice(0, 100);
     const result = await songs.create(body, idem);
+    hint(res, result);
     res.status(result.status === "ready" ? 200 : 202).json(result);
   });
 
   r.get("/songs/:id", async (req, res) => {
     if (!/^[a-f0-9]{32}$/.test(req.params.id)) throw new AppError(400, "bad_id", "Invalid song id");
-    res.json(await songs.view(req.params.id));
-  });
-
-  r.get("/previews/:id", async (req, res) => {
-    const p = await previews.get(req.params.id);
-    if (!p) throw new AppError(404, "not_found", "Unknown preview");
-    res.json(p);
+    const view = await songs.view(req.params.id);
+    hint(res, view);
+    res.json(view);
   });
 
   return r;

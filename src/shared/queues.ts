@@ -1,20 +1,17 @@
 import { Queue } from "bullmq";
 import { bullConnection } from "./redis.js";
 
-export const QUEUE = { sing: "sing", preview: "preview" } as const;
+export const QUEUE = { sing: "sing" } as const;
 
+// One job per song (jobId = songId), so BullMQ dedupes, retries and recovers
+// crashed work per song. When a job runs, it may sing other waiting songs of the
+// same template in the same provider call; their own jobs then finish as no-ops.
 export interface SingJobData {
   songId: string;
   templateId: string;
-  lang: string;
-  nameKey: string;
-  lyricName: string;
-}
-
-export interface PreviewJobData {
-  previewId: string;
-  templateId: string;
-  recordingKey: string;
+  // Set on the first attempt: the songs this job claimed for one provider call.
+  // Retries reuse it, so a retried batch never picks up different songs.
+  batch?: string[];
 }
 
 // Lower number = served sooner. New songs start here; songs many users are
@@ -31,11 +28,7 @@ export function createQueues() {
       removeOnFail: { age: 24 * 3600 },
     },
   });
-  const preview = new Queue<PreviewJobData>(QUEUE.preview, {
-    connection: bullConnection,
-    defaultJobOptions: { attempts: 2, removeOnComplete: { age: 600 }, removeOnFail: { age: 3600 } },
-  });
-  return { sing, preview };
+  return { sing };
 }
 
 export type Queues = ReturnType<typeof createQueues>;

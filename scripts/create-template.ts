@@ -2,6 +2,7 @@
 //   npx tsx --env-file=.env scripts/create-template.ts --genre love
 //   npx tsx --env-file=.env scripts/create-template.ts --genre pop --spike
 //   npx tsx --env-file=.env scripts/create-template.ts --genre love --dry-run   (print plan, no API call)
+//   npx tsx --env-file=.env scripts/create-template.ts --lang mr --genre love --spike
 //
 // Each template: instrumental intro, name hook, verse, name hook, instrumental outro (27 s).
 // The hooks are sung with a neutral placeholder word that fits the genre. Kept sections
@@ -21,47 +22,93 @@ interface Preset {
   hookStyles: string[];
 }
 
-// Hindi presets. Add more genres/languages here.
-const PRESETS: Record<string, Preset> = {
-  love: {
-    placeholder: "सनम",
-    aliases: ["सनम", "sanam"],
-    hook: "[Hook]\nओ {name}, दिल कहे तेरा नाम",
-    verse: "[Verse]\nतेरी बातों में खो जाऊँ\nहर पल तुझको ही गाऊँ",
-    styles: ["romantic bollywood ballad", "soft piano", "strings", "acoustic guitar", "emotional", "slow tempo", "80 bpm", "male vocals"],
-    hookStyles: ["romantic hook", "warm male vocals", "hindi vocals", "soft piano"],
+// Presets per language, then per genre. Add a language = add its block here, then
+// generate its templates; the API offers it automatically (GET /v1/languages).
+// Lyrics for languages other than Hindi need a native speaker's check before launch.
+// The placeholder must be a natural lyric word, never a common name: kept sections
+// are copied into every song, so a leaked placeholder must still sound normal.
+const PRESETS: Record<string, Record<string, Preset>> = {
+  hi: {
+    love: {
+      placeholder: "सनम",
+      aliases: ["सनम", "sanam"],
+      hook: "[Hook]\nओ {name}, दिल कहे तेरा नाम",
+      verse: "[Verse]\nतेरी बातों में खो जाऊँ\nहर पल तुझको ही गाऊँ",
+      styles: ["romantic bollywood ballad", "soft piano", "strings", "acoustic guitar", "emotional", "slow tempo", "80 bpm", "male vocals"],
+      hookStyles: ["romantic hook", "warm male vocals", "hindi vocals", "soft piano"],
+    },
+    pop: {
+      placeholder: "यारा",
+      aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
+      hook: "[Hook]\nहे {name}, तू है सबसे ख़ास",
+      verse: "[Verse]\nचल आज ये रात हमारी है\nहर धड़कन में यारी है",
+      styles: ["upbeat hindi pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
+      hookStyles: ["catchy pop hook", "energetic female vocals", "hindi vocals", "synths"],
+    },
+    bhangra: {
+      placeholder: "यारा",
+      aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
+      hook: "[Hook]\nओ {name}, नच ले आज",
+      verse: "[Verse]\nढोल बजे ते दिल झूमे\nसारी दुनिया संग घूमे",
+      styles: ["punjabi bhangra", "dhol", "tumbi", "high energy", "festive", "celebration", "125 bpm", "male vocals"],
+      hookStyles: ["bhangra hook", "powerful male vocals", "punjabi style vocals", "dhol"],
+    },
+    sufi: {
+      placeholder: "यारा",
+      aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
+      hook: "[Hook]\n{name}, तू ही मेरी इबादत",
+      verse: "[Verse]\nरूह में तेरा नूर बसे\nहर साँस में तू ही हँसे",
+      styles: ["sufi", "harmonium", "tabla", "soulful", "spiritual", "qawwali influence", "90 bpm", "male vocals"],
+      hookStyles: ["soulful sufi hook", "deep male vocals", "hindi vocals", "harmonium"],
+    },
+    lofi: {
+      placeholder: "दोस्त",
+      aliases: ["दोस्त", "dost", "dosth"],
+      hook: "[Hook]\n{name}, बस तू ही तू",
+      verse: "[Verse]\nधीमी सी ये शाम है\nलबों पे तेरा नाम है",
+      styles: ["hindi lofi", "chill", "mellow keys", "vinyl crackle", "soft beats", "relaxed", "75 bpm", "female vocals"],
+      hookStyles: ["dreamy hook", "soft female vocals", "hindi vocals", "mellow keys"],
+    },
   },
-  pop: {
-    placeholder: "यारा",
-    aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
-    hook: "[Hook]\nहे {name}, तू है सबसे ख़ास",
-    verse: "[Verse]\nचल आज ये रात हमारी है\nहर धड़कन में यारी है",
-    styles: ["upbeat hindi pop", "synths", "punchy drums", "bass", "catchy", "dance", "118 bpm", "female vocals"],
-    hookStyles: ["catchy pop hook", "energetic female vocals", "hindi vocals", "synths"],
+  mr: {
+    love: {
+      placeholder: "सजणा",
+      aliases: ["सजणा", "सजना", "sajana", "sajna"],
+      hook: "[Hook]\nअरे {name}, तूच माझं गाणं",
+      verse: "[Verse]\nतुझ्या हसण्यात हरवलो मी\nप्रत्येक क्षणी तुलाच शोधतो मी",
+      styles: ["romantic marathi song", "soft piano", "strings", "acoustic guitar", "emotional", "slow tempo", "80 bpm", "male vocals"],
+      hookStyles: ["romantic hook", "warm male vocals", "marathi vocals", "soft piano"],
+    },
   },
-  bhangra: {
-    placeholder: "यारा",
-    aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
-    hook: "[Hook]\nओ {name}, नच ले आज",
-    verse: "[Verse]\nढोल बजे ते दिल झूमे\nसारी दुनिया संग घूमे",
-    styles: ["punjabi bhangra", "dhol", "tumbi", "high energy", "festive", "celebration", "125 bpm", "male vocals"],
-    hookStyles: ["bhangra hook", "powerful male vocals", "punjabi style vocals", "dhol"],
+  gu: {
+    garba: {
+      placeholder: "સાજન",
+      aliases: ["સાજન", "sajan", "saajan"],
+      hook: "[Hook]\nઓ {name}, તું છે ખાસ",
+      verse: "[Verse]\nઢોલ વાગે ને મન નાચે\nઆજે રાત આપણી સાથે",
+      styles: ["gujarati garba", "dhol", "dandiya beats", "festive", "upbeat", "120 bpm", "female vocals"],
+      hookStyles: ["catchy garba hook", "energetic female vocals", "gujarati vocals", "dhol"],
+    },
   },
-  sufi: {
-    placeholder: "यारा",
-    aliases: ["यारा", "यार", "yaara", "yara", "yaar"],
-    hook: "[Hook]\n{name}, तू ही मेरी इबादत",
-    verse: "[Verse]\nरूह में तेरा नूर बसे\nहर साँस में तू ही हँसे",
-    styles: ["sufi", "harmonium", "tabla", "soulful", "spiritual", "qawwali influence", "90 bpm", "male vocals"],
-    hookStyles: ["soulful sufi hook", "deep male vocals", "hindi vocals", "harmonium"],
+  pa: {
+    bhangra: {
+      placeholder: "ਸੱਜਣਾ",
+      aliases: ["ਸੱਜਣਾ", "ਸਜਣਾ", "sajjna", "sajna"],
+      hook: "[Hook]\nਓ {name}, ਨੱਚ ਲੈ ਅੱਜ",
+      verse: "[Verse]\nਢੋਲ ਵੱਜੇ ਤੇ ਦਿਲ ਝੂਮੇ\nਸਾਰੀ ਦੁਨੀਆ ਨਾਲ ਘੁੰਮੇ",
+      styles: ["punjabi bhangra", "dhol", "tumbi", "high energy", "festive", "celebration", "125 bpm", "male vocals"],
+      hookStyles: ["bhangra hook", "powerful male vocals", "punjabi vocals", "dhol"],
+    },
   },
-  lofi: {
-    placeholder: "दोस्त",
-    aliases: ["दोस्त", "dost", "dosth"],
-    hook: "[Hook]\n{name}, बस तू ही तू",
-    verse: "[Verse]\nधीमी सी ये शाम है\nलबों पे तेरा नाम है",
-    styles: ["hindi lofi", "chill", "mellow keys", "vinyl crackle", "soft beats", "relaxed", "75 bpm", "female vocals"],
-    hookStyles: ["dreamy hook", "soft female vocals", "hindi vocals", "mellow keys"],
+  bn: {
+    love: {
+      placeholder: "বন্ধু",
+      aliases: ["বন্ধু", "bondhu", "bandhu"],
+      hook: "[Hook]\nও {name}, তুমি আমার গান",
+      verse: "[Verse]\nতোমার হাসিতে আলো জ্বলে\nমন আমার তোমায় বলে",
+      styles: ["bengali romantic song", "acoustic guitar", "flute", "soft", "melodic", "85 bpm", "male vocals"],
+      hookStyles: ["romantic hook", "warm male vocals", "bengali vocals", "acoustic guitar"],
+    },
   },
 };
 
@@ -78,9 +125,11 @@ const { values } = parseArgs({
     "skip-check": { type: "boolean", default: false },
   },
 });
-const found = values.genre ? PRESETS[values.genre] : undefined;
+const byLang = PRESETS[values.lang!];
+const found = byLang && values.genre ? byLang[values.genre] : undefined;
 if (!found) {
-  console.error(`usage: --genre ${Object.keys(PRESETS).join("|")} [--id hi-love-01] [--spike] [--dry-run]`);
+  const options = Object.entries(PRESETS).map(([l, g]) => `--lang ${l} --genre ${Object.keys(g).join("|")}`).join("\n  ");
+  console.error(`usage (one of):\n  ${options}\n  [--id hi-love-01] [--spike] [--dry-run]`);
   process.exit(1);
 }
 const preset: Preset = found;

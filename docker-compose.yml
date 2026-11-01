@@ -26,14 +26,6 @@ services:
     depends_on: [redis]
     restart: unless-stopped
 
-  preview-worker:
-    build: .
-    command: ["node", "dist/src/apps/preview-worker.js"]
-    env_file: .env
-    environment: { REDIS_URL: "redis://redis:6379" }
-    volumes: [files:/app/data]
-    depends_on: [redis]
-    restart: unless-stopped
 
 volumes:
   redis-data: {}
